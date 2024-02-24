@@ -1,41 +1,29 @@
 from django.contrib.auth.models import BaseUserManager
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, 
-                    # username, 
-                    phone_number, full_name, password=None
-        ):
-        if not email:
-            raise ValueError("Users must have an email address")
-        # if not username:
-        #     raise ValueError("Users must have a username")
-        if not full_name:
-            raise ValueError("Users must have a full name")
+    def create_user(self, email=None, full_name=None, phone_number=None, password=None, **extra_fields):
+        if email:
+            
+            email = self.normalize_email(email)
+            user = self.model(
+                email=email,
+                full_name=full_name,
+                phone_number=phone_number,
+                **extra_fields
+            )
+            user.set_password(password)
+            user.save(using=self._db)
+            return user
 
-        user = self.model(
-            email=self.normalize_email(email),
-            # username=username,
-            full_name=full_name,
-            phone_number=phone_number,
-        )
+    def create_superuser(self, email=None, full_name=None, phone_number=None, password=None, **extra_fields):
+        if not email or phone_number:
+            raise ValueError('The Email or Phone must be set')
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
 
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
 
-    def create_superuser(
-            self, email, 
-            # username, 
-            phone_number, full_name, password=None
-        ):
-        user = self.create_user(
-            email=self.normalize_email(email),
-            # username=username,
-            full_name=full_name,
-            password=password,
-            phone_number=phone_number,
-        )
-        user.is_superuser = True
-        user.is_staff = True
-        user.save(using=self._db)
-        return user
+        return self.create_user(email, full_name, phone_number, password, **extra_fields)
