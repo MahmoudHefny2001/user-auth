@@ -5,6 +5,7 @@ from .serializers import ProductSerializer, CategorySerializer
 from rest_framework.permissions import AllowAny
 
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class HomeViewSet(views.APIView):
@@ -17,6 +18,7 @@ class HomeViewSet(views.APIView):
     products_with_attachments = []
 
     for product in Product.objects.order_by('category').distinct('category')[:5]:
+
         attachments = ProductAttachment.objects.filter(product=product).values_list('attachment', flat=True)[:3]
         product_data = {
             "name": product.name,
@@ -28,7 +30,7 @@ class HomeViewSet(views.APIView):
         products_with_attachments.append(product_data)
     
 
-    # select only name and description from the category
+    # select only name from the category
     categories = Category.objects.all().values('name')[:5]
 
 
@@ -47,3 +49,7 @@ class HomeViewSet(views.APIView):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    # permission_classes = [IsAuthenticated, IsAdminUser]
+    authentication_classes = [JWTAuthentication,]
+
+    

@@ -24,6 +24,8 @@ ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 
 INSTALLED_APPS = [
 
+    "whitenoise.runserver_nostatic", # for serving static files
+
     'jazzmin', # 
     'corsheaders',  #
     'rest_framework_swagger', #
@@ -43,8 +45,8 @@ INSTALLED_APPS = [
     "models_extensions", #
 
     "users", #
-
     "products", #
+    "customers", #
 
 ]
 
@@ -258,6 +260,24 @@ CORS_ALLOWED_ORIGINS = [
     'http://*',
 ]
 
+
+JAZZMIN_SETTINGS = {
+# "site_title": "",
+# "site_header": "",
+# "site_brand": "",
+# "site_logo": "",
+# "site_logo_classes": "img-circle",
+# "welcome_sign": "Welcome ",
+# "related_modal_active": False,
+# "copyright": "Smart Solutions Ltd",
+# "show_sidebar": True,
+# "navigation_expanded": True,
+# "show_ui_builder": True,
+
+"usermenu_links": [
+    #  {'name':"Support", "url":"https://www.facebook.com/"},
+    ],
+}
 
 
 CORS_ALLOW_METHODS = [
