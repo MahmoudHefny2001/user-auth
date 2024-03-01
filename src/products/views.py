@@ -7,14 +7,18 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from django.conf import settings
+
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
+from .filters import ProductFilter
+
+
 
 class HomeViewSet(views.APIView):
     
     permission_classes = [AllowAny]
     
-    # products = Product.objects.order_by('category').distinct('category').values('name', 'description', 'price', 'image')[:5]
-
-
     products_with_attachments = []
 
     for product in Product.objects.order_by('category').distinct('category')[:5]:
@@ -24,7 +28,7 @@ class HomeViewSet(views.APIView):
             "name": product.name,
             "description": product.description,
             "price": float(product.price),
-            "main_image": str(product.image),
+            "main_image": product.get_image_url(),
             "images": list(attachments),
         }
         products_with_attachments.append(product_data)
@@ -43,13 +47,16 @@ class HomeViewSet(views.APIView):
         )
 
     
-    
 
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    # permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [AllowAny]
     authentication_classes = [JWTAuthentication,]
+
+    filterset_class = ProductFilter
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    search_fields = ['id', 'name', 'category']
 
     
