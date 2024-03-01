@@ -1,0 +1,18 @@
+| **Assumptions:**
+	- Secure payment gateways are in use.
+
+| **Inputs:**
+	- User payment details.
+	- Order amount.
+
+| **Processes:**
+	- PAYMENT AUTHORIZATION:
+		- Verify user's payment capability.
+		- Authorize the transaction.
+
+	- TRANSACTION PROCESSING:
+		- Process the payment.
+
+| **Outputs:**
+	- Payment confirmation.
+	- Transaction ID.

@@ -1,0 +1,20 @@
+| **Assumptions:**
+	- Customer support is available.
+
+| **Inputs:**
+	- User queries.
+	- Support tickets.
+
+| **Processes:**
+	- TICKET HANDLING:
+		- Assign, categorize, and prioritize support tickets.
+
+	- LIVE CHAT:
+		- Provide real-time assistance.
+
+	- EMAIL SUPPORT:
+		- Respond to email queries.
+
+| **Outputs:**
+	- Resolved queries.
+	- Support ticket updates.

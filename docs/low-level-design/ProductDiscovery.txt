@@ -1,0 +1,18 @@
+| **Assumptions:**
+	- Products are well-categorized and tagged.
+
+| **Inputs:**
+	- User queries.
+	- Category selections.
+
+| **Processes:**
+	- SEARCH ALGORITHM:
+		- Match user queries with product data.
+		- Apply filters based on category.
+
+	- RECOMMENDATION ENGINE:
+		- Analyze user history for personalized suggestions.
+
+| **Outputs:**
+	- List of relevant products.
+	- Product details.

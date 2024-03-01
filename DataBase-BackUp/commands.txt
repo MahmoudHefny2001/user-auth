@@ -1,0 +1,3 @@
+pg_dump -h {host} -p {port} -U {user} -d {database_name} -W -F c -f {path}/data_21_11.dump
+
+pg_restore -h {host} -p 5432 -U postgres -d {target_database} -W -F c /path/to/backupfile.dump
