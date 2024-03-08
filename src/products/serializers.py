@@ -79,7 +79,6 @@ class GetFavouriteProductsSerializer(serializers.ModelSerializer):
             "sale_percent": str(int(instance.product.sale_percent)) + "%",
             "price_after_sale": instance.product.price_after_sale ,
             "category": {
-                "id": instance.product.category.id,
                 "name": instance.product.category.name
             }
         }

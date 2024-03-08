@@ -75,53 +75,6 @@ class ProductViewSet(viewsets.ModelViewSet):
     
 
 
-class AddToFavourites(views.APIView):
-    permission_classes = [IsAuthenticated,]
-    authentication_classes = [JWTAuthentication,]
-
-    def post(self, request, *args, **kwargs):
-        product_id = kwargs.get('product_id', None)
-        if product_id:
-            product = Product.objects.get(id=product_id)
-            favourite_product = CustomerFavouriteProduct.objects.create(customer=request.user.customer, product=product)
-            favourite_product.save()
-            return Response(
-                {
-                    "message": "Product added to favourites successfully.",
-                    
-                },
-                status=201
-            )
-        else:
-            return Response(
-                {
-                    "message": "Product id is required."
-                },
-                status=400
-            )
-        
-
-    def delete(self, request, *args, **kwargs):
-        product_id = kwargs.get('product_id', None)
-        if product_id:
-            product = Product.objects.get(id=product_id)
-            favourite_product = CustomerFavouriteProduct.objects.get(customer=request.user.customer, product=product)
-            favourite_product.delete()
-            return Response(
-                {
-                    "message": "Product removed from favourites successfully.",
-                    
-                },
-                status=200
-            )
-        else:
-            return Response(
-                {
-                    "message": "Product id is required."
-                },
-                status=400
-            )
-
 
 
 class FavouriteProducts(viewsets.ModelViewSet):
@@ -139,11 +92,15 @@ class FavouriteProducts(viewsets.ModelViewSet):
         
         
 
-    def post(self, request, *args, **kwargs):
-        product_id = request.query_params.get('product_id', None)
+    def create(self, request, *args, **kwargs):
+        
+        product_id = request.data.get('product_id')  # Assuming the product_id is in the request data
+
+        print(request.user)
+
         if product_id:
             product = Product.objects.get(id=product_id)
-            favourite_product = CustomerFavouriteProduct.objects.create(customer=request.user.customer, product=product)
+            favourite_product = CustomerFavouriteProduct.objects.create(customer_id=request.user.id, product_id=product_id)
             favourite_product.save()
             return Response(
                 {
@@ -162,7 +119,7 @@ class FavouriteProducts(viewsets.ModelViewSet):
         
 
     def delete(self, request, *args, **kwargs):
-        product_id = kwargs.get('product_id', None)
+        product_id = request.data.get('product_id')  # Assuming the product_id is in the request data
         if product_id:
             product = Product.objects.get(id=product_id)
             favourite_product = CustomerFavouriteProduct.objects.get(customer=request.user.customer, product=product)

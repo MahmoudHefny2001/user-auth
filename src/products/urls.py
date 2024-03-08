@@ -7,7 +7,7 @@ router = DefaultRouter()
 
 router.register(r"^products", views.ProductViewSet, basename="products")
 
-router.register(r"^favourite-products", views.FavouriteProducts, basename="favourite_products")
+router.register(r"^products-favourite", views.FavouriteProducts, basename="favourite_products")
 
 
 
