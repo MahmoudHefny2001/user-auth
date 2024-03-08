@@ -1,0 +1,57 @@
+# dependencies
+.env
+.pytest_cache/
+__pycache__/
+env/
+.tox/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+
+# build artifacts
+*.pyc
+*.pyo
+*.pyd
+*.pyd$
+*.so
+*.egg
+*.eggs
+*.jar
+*.war
+*.ear
+*.class
+*.dist
+*.exp
+*.lib
+*.a
+*.o
+*.obj
+*.pdb
+*.dll
+*.dylib
+*.node
+*.exe
+*.out
+*.wasm
+
+# log files
+*.log
+*.pot
+*.log$
+*.mo
+
+# misc
+*.pid
+*.seed
+*.tag
+.DS_Store
+.DS_Store$
+.git
+.gitignore
+.dockerignore
+docker-compose.yml
+Dockerfile
+README.md
+LICENSE

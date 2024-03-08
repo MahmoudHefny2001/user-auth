@@ -7,6 +7,9 @@ router = DefaultRouter()
 
 router.register(r"^products", views.ProductViewSet, basename="products")
 
+router.register(r"^favourite-products", views.FavouriteProducts, basename="favourite_products")
+
+
 
 urlpatterns = [
     path("", include(router.urls)),

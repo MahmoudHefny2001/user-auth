@@ -168,8 +168,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     # 'default': {
@@ -192,8 +190,6 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -246,26 +242,26 @@ RAILWAY_VOLUME_NAME = str(os.environ.get("RAILWAY_VOLUME_NAME"))
 RAILWAY_VOLUME_MOUNT_PATH = str(os.environ.get("RAILWAY_VOLUME_MOUNT_PATH"))
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+# STATIC_URL = 'static/'
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+# STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 
 # Media Files (uploaded from users)
-MEDIA_URL = "media/"
-MEDIA_ROOT = os.environ.get("RAILWAY_VOLUME_MOUNT_PATH")
+# MEDIA_URL = "media/"
+# MEDIA_ROOT = os.environ.get("RAILWAY_VOLUME_MOUNT_PATH")
 
 
 
 # Local static files
-# STATIC_URL = "/static/"
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-# STATIC_FILES_DIRS = [BASE_DIR / "static",]
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_FILES_DIRS = [BASE_DIR / "static",]
 
 
 # Loacl media files
-# MEDIA_URL = "media/"
-# MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+MEDIA_URL = "media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -282,8 +278,8 @@ CORS_ALLOWED_ORIGINS = [
 
 
 JAZZMIN_SETTINGS = {
-# "site_title": "",
-# "site_header": "",
+# "site_title": "Digital Hub",
+# "site_header": "Digital Hub",
 # "site_brand": "",
 # "site_logo": "",
 # "site_logo_classes": "img-circle",
@@ -295,7 +291,7 @@ JAZZMIN_SETTINGS = {
 # "show_ui_builder": True,
 
 "usermenu_links": [
-    #  {'name':"Support", "url":"https://www.facebook.com/"},
+     {'name':"Support", "url":"https://www.facebook.com/"},
     ],
 }
 

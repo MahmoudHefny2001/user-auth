@@ -25,5 +25,8 @@ class UserManager(BaseUserManager):
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
+        
+        # set the user role to admin
+        extra_fields.setdefault('role', self.model.Role.ADMIN)
 
         return self.create_user(email, full_name, phone_number, password, **extra_fields)

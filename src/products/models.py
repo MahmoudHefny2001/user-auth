@@ -6,6 +6,8 @@ from users.models import User
 
 from django.conf import settings
 
+from decimal import Decimal
+
 
 class Category(TimeStampedModel):
     name = models.CharField(max_length=255)
@@ -30,10 +32,27 @@ class Product(TimeStampedModel):
     
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name="products")
 
-    # available = models.BooleanField(default=True)
-    # on_sale = models.BooleanField(default=False)
-    # sale_percent = models.IntegerField(default=0)
-    # sale_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    available = models.BooleanField(default=True, null=True, blank=True)
+    on_sale = models.BooleanField(default=False, null=True, blank=True)
+    sale_percent = models.IntegerField(default=0, null=True, blank=True)
+    price_after_sale = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+
+    def get_reviews(self):
+        return ProductReview.objects.filter(product=self)
+
+
+    def get_attachments(self):
+        return ProductAttachment.objects.filter(product=self)
+
+
+    def save(self, **kwargs):
+        if self.on_sale:
+            self.price_after_sale = self.price - (self.price * Decimal(self.sale_percent) / 100)
+        else:
+            self.price_after_sale = self.price
+        super(Product, self).save(**kwargs)
+
 
     def __str__(self):
         return self.name
@@ -43,6 +62,7 @@ class Product(TimeStampedModel):
         verbose_name = "Product"
         verbose_name_plural = "Products"
         ordering = ["-created"]
+        
     
     def get_image_url(self):
         if self.image:
@@ -88,6 +108,12 @@ class ProductReview(TimeStampedModel):
 class ProductAttachment(TimeStampedModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="attachments")
     attachment = models.FileField(upload_to="images/product_attachments")
+
+    def get_attachment_url(self):
+        if self.attachment:
+            # return the full http url of the image
+            return f"{settings.HOST_URL}{self.attachment.url}"
+        return None
     
     def __str__(self):
         return f"{self.product} - {self.attachment}"

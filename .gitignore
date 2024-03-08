@@ -38,6 +38,9 @@ media/*
 staticfiles/
 staticfiles/*
 */staticfiles/*/*
+static/
+static/*
+*/static/*/*
 
 
 # PyInstaller

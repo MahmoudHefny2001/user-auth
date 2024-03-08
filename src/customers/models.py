@@ -55,3 +55,23 @@ class CustomerProfile(models.Model):
         db_table = "customer_profiles"
         verbose_name = "Customer Profile"
         verbose_name_plural = "Customer Profiles"
+
+    
+
+
+class CustomerFavouriteProduct(models.Model):
+    """
+    This is the CustomerFavouriteProduct model.
+    It is used to create an CustomerFavouriteProduct instance.
+    """
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='favourites')
+
+    product = models.ForeignKey("products.Product", on_delete=models.CASCADE, related_name='favourites')
+
+    class Meta:
+        db_table = "customer_favourite_products"
+        verbose_name = "Customer Favourite Product"
+        verbose_name_plural = "Customer Favourite Products"
+
+    def __str__(self):
+        return f"{self.customer} - {self.product}"

@@ -32,7 +32,9 @@ class CustomerSignupView(APIView):
             if customer:
                 return Response({
                     'user': serializers.CustomerSerializer(customer).data
-                })
+                },
+                status=status.HTTP_201_CREATED
+                )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -55,13 +57,15 @@ class CustomerLoginView(APIView):
 
         customer = CustomUserAuthenticationBackend().authenticate(request, username=email_or_phone, password=password)
 
-        if customer:
+        if customer and customer.role == Customer.Role.CUSTOMER:
             refresh = RefreshToken.for_user(customer)
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
                 'user': serializers.CustomerProfileSerializer(customer).data
-            })
+            },
+            status=status.HTTP_200_OK
+            )
         return Response("Invalid Credentials", status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -104,12 +108,19 @@ class CustomerProfileViewSet(viewsets.ModelViewSet):
             customer = self.get_object()
             customer.bio = bio
             customer.save()
-            return Response(serializers.CustomerProfileSerializer(customer).data)
+            return Response(
+                serializers.CustomerProfileSerializer(customer).data,
+                status=status.HTTP_200_OK
+                
+            )
         if image:
             customer = self.get_object()
             customer.image = image
             customer.save()
-            return Response(serializers.CustomerProfileSerializer(customer).data)
+            return Response(
+                serializers.CustomerProfileSerializer(customer).data,
+                status=status.HTTP_200_OK
+            )
 
         else:
             return super().partial_update(request, *args, **kwargs)
