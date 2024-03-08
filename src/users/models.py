@@ -17,7 +17,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     class Role(models.TextChoices):
         CUSTOMER = "CUSTOMER", "Customer"
-        ADMIN = "ADMIN", "Admin"
+        ADMIN = "ADMIN", "Admin",
+        MERCHANT = "MERCHANT", "Merchant"
         # MANAGER = "MANAGER", "Manager"
         # SUPERVISOR = "SUPERVISOR", "Supervisor"
         # STAFF = "STAFF", "Staff",

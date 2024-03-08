@@ -17,9 +17,12 @@ from customers.models import CustomerFavouriteProduct
 
 from rest_framework.permissions import IsAuthenticated
 
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 class HomeViewSet(views.APIView):
     
+    throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
+
     permission_classes = [AllowAny]
     
     products = []
@@ -60,6 +63,9 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     authentication_classes = [JWTAuthentication,]
 
+    throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
+
+
     http_method_names   = ['get', 'retrieve']
 
     filterset_class = ProductFilter
@@ -81,6 +87,9 @@ class FavouriteProducts(viewsets.ModelViewSet):
     queryset = CustomerFavouriteProduct.objects.filter()
     permission_classes = [IsAuthenticated,]
     authentication_classes = [JWTAuthentication,]
+
+    throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
+
 
     http_method_names   = ['get','delete', 'post',]
     

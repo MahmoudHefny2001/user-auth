@@ -12,6 +12,9 @@ urlpatterns = [
     path("customers/", include("customers.urls")), #
 
     path("api/", include("products.urls")), #
+
+    path("contact-us/", include("contacts.urls")), #
+
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += [re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT})]

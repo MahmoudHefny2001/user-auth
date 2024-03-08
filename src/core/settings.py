@@ -49,7 +49,12 @@ INSTALLED_APPS = [
     "users", #
     "products", #
     "customers", #
-
+    "orders", #
+    "carts", #
+    "whishlists", #
+    "contacts", #
+    "admins", #
+    "merchants", #
 ]
 
 

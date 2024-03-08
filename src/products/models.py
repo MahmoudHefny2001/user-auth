@@ -44,7 +44,8 @@ class Product(TimeStampedModel):
 
     def get_attachments(self):
         return ProductAttachment.objects.filter(product=self)
-
+    
+    
 
     def save(self, **kwargs):
         if self.on_sale:

@@ -6,7 +6,7 @@ class CustomerManager(UserManager):
 
     """
     This is a custom manager for the Customer model.
-    It is used to filter the Customer from the Person model.
+    It is used to filter the Customer from the User model.
     """
 
     def get_queryset(self, *args, **kwargs):
