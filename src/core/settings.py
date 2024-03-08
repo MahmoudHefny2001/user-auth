@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "contacts", #
     "admins", #
     "merchants", #
+    "stocks", #
 ]
 
 
@@ -247,26 +248,26 @@ RAILWAY_VOLUME_NAME = str(os.environ.get("RAILWAY_VOLUME_NAME"))
 RAILWAY_VOLUME_MOUNT_PATH = str(os.environ.get("RAILWAY_VOLUME_MOUNT_PATH"))
 
 # Static files (CSS, JavaScript, Images)
-# STATIC_URL = 'static/'
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-# STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 
 # Media Files (uploaded from users)
-# MEDIA_URL = "media/"
-# MEDIA_ROOT = os.environ.get("RAILWAY_VOLUME_MOUNT_PATH")
+MEDIA_URL = "media/"
+MEDIA_ROOT = os.environ.get("RAILWAY_VOLUME_MOUNT_PATH")
 
 
 
 # Local static files
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_FILES_DIRS = [BASE_DIR / "static",]
+# STATIC_URL = "/static/"
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_FILES_DIRS = [BASE_DIR / "static",]
 
 
 # Loacl media files
-MEDIA_URL = "media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+# MEDIA_URL = "media/"
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

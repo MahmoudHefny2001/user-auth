@@ -1,23 +1,20 @@
-from rest_framework import viewsets, generics, views
-from .models import Product, Category, ProductReport, ProductReview, ProductAttachment, ProductAttachment
-from .serializers import GetProductsSerializer, CategorySerializer, RetrieveProductsSerializer, GetFavouriteProductsSerializer
+from rest_framework import viewsets, views
+from .models import Product, Category
+from .serializers import GetProductsSerializer, RetrieveProductsSerializer
 
 from rest_framework.permissions import AllowAny
 
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from django.conf import settings
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from .filters import ProductFilter
 
-from customers.models import CustomerFavouriteProduct
-
-from rest_framework.permissions import IsAuthenticated
-
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
+
+
 
 class HomeViewSet(views.APIView):
     
@@ -79,71 +76,3 @@ class ProductViewSet(viewsets.ModelViewSet):
         else:
             return RetrieveProductsSerializer
     
-
-
-
-
-class FavouriteProducts(viewsets.ModelViewSet):
-    queryset = CustomerFavouriteProduct.objects.filter()
-    permission_classes = [IsAuthenticated,]
-    authentication_classes = [JWTAuthentication,]
-
-    throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
-
-
-    http_method_names   = ['get','delete', 'post',]
-    
-    def get_queryset(self):
-        return CustomerFavouriteProduct.objects.filter(customer=self.request.user.customer)
-    
-    def get_serializer_class(self):
-        return GetFavouriteProductsSerializer
-        
-        
-
-    def create(self, request, *args, **kwargs):
-        
-        product_id = request.data.get('product_id')  # Assuming the product_id is in the request data
-
-        print(request.user)
-
-        if product_id:
-            product = Product.objects.get(id=product_id)
-            favourite_product = CustomerFavouriteProduct.objects.create(customer_id=request.user.id, product_id=product_id)
-            favourite_product.save()
-            return Response(
-                {
-                    "message": "Product added to favourites successfully.",
-                    
-                },
-                status=201
-            )
-        else:
-            return Response(
-                {
-                    "message": "Product id is required."
-                },
-                status=400
-            )
-        
-
-    def delete(self, request, *args, **kwargs):
-        product_id = request.data.get('product_id')  # Assuming the product_id is in the request data
-        if product_id:
-            product = Product.objects.get(id=product_id)
-            favourite_product = CustomerFavouriteProduct.objects.get(customer=request.user.customer, product=product)
-            favourite_product.delete()
-            return Response(
-                {
-                    "message": "Product removed from favourites successfully.",
-                    
-                },
-                status=200
-            )
-        else:
-            return Response(
-                {
-                    "message": "Product id is required."
-                },
-                status=400
-            )

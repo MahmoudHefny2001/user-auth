@@ -15,6 +15,8 @@ urlpatterns = [
 
     path("contact-us/", include("contacts.urls")), #
 
+    path("whishlists/", include("whishlists.urls")), #
+
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += [re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT})]

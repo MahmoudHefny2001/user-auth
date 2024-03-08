@@ -4,8 +4,8 @@ from django_extensions.db.models import TimeStampedModel
 
 
 class Whishlist(TimeStampedModel):
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="whishlists")
-    products = models.ManyToManyField("products.Product", related_name="whishlists")
+    customer = models.ForeignKey("customers.Customer", on_delete=models.CASCADE, related_name="whishlists")
+    product = models.ForeignKey("products.Product", related_name="whishlists", on_delete=models.CASCADE)
     
     class Meta:
         db_table = "whishlists"
@@ -15,4 +15,5 @@ class Whishlist(TimeStampedModel):
     
 
     def __str__(self):
-        return f"Whishlist {self.id}"
+        return f"{self.customer} - {self.product}"
+
