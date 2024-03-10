@@ -27,6 +27,7 @@ class HomeViewSet(views.APIView):
     for product in Product.objects.order_by('category').distinct('category')[:5]:
 
         product_data = {
+            "id": product.id,
             "name": product.name,
             "description": product.description,
             "price": float(product.price),

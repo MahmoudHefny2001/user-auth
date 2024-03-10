@@ -3,19 +3,20 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
-from .models import Whishlist
+from .models import Wishlist
 
-
-from .serializers import WhishListSerializer
+from .serializers import WishListSerializer
 
 from products.models import Product
 
 from customers.models import Customer
 
-class WhishList(viewsets.ModelViewSet):
-    queryset = Whishlist.objects.filter()
+
+class WishList(viewsets.ModelViewSet):
+    queryset = Wishlist.objects.filter()
     permission_classes = [IsAuthenticated,]
     authentication_classes = [JWTAuthentication,]
+    serializer_class = WishListSerializer
 
     throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
 
@@ -23,11 +24,7 @@ class WhishList(viewsets.ModelViewSet):
     http_method_names   = ['get','delete', 'post',]
     
     def get_queryset(self):
-        return Whishlist.objects.filter(customer=self.request.user.customer)
-    
-    def get_serializer_class(self):
-        return WhishListSerializer
-        
+        return Wishlist.objects.filter(customer=self.request.user.customer)
         
 
     def create(self, request, *args, **kwargs):
@@ -36,11 +33,11 @@ class WhishList(viewsets.ModelViewSet):
         customer = Customer.objects.get(id=request.user.customer.id)
 
         if product and customer:
-            whishlist_product = Whishlist.objects.create(customer=customer, product=product)
+            whishlist_product = Wishlist.objects.create(customer=customer, product=product)
             whishlist_product.save()
             return Response(
                 {
-                    "message": "Product added to favourites successfully.",
+                    "message": "Product added to wishlist successfully.",
                     
                 },
                 status=201
@@ -59,11 +56,11 @@ class WhishList(viewsets.ModelViewSet):
         customer = Customer.objects.get(id=request.user.customer.id)
 
         if product and customer:
-            whishlist_product = Whishlist.objects.get(customer=customer, product=product)
+            whishlist_product = Wishlist.objects.get(customer=customer, product=product)
             whishlist_product.delete()
             return Response(
                 {
-                    "message": "Product removed from favourites successfully.",
+                    "message": "Product removed from wishlist successfully.",
                     
                 },
                 status=200

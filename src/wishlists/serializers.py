@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from .models import Whishlist
+from .models import Wishlist
 
-class WhishListSerializer(serializers.ModelSerializer):
+class WishListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Whishlist
+        model = Wishlist
         # fields = "__all__"
         exclude = ['customer', ]
         depth = 1

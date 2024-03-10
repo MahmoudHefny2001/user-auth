@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "customers", #
     "orders", #
     "carts", #
-    "whishlists", #
+    "wishlists", #
     "contacts", #
     "admins", #
     "merchants", #
