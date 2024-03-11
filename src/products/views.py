@@ -22,33 +22,34 @@ class HomeViewSet(views.APIView):
 
     permission_classes = [AllowAny]
     
-    products = []
-
-    for product in Product.objects.order_by('category').distinct('category')[:5]:
-
-        product_data = {
-            "id": product.id,
-            "name": product.name,
-            "description": product.description,
-            "price": float(product.price),
-            "on_sale": product.on_sale,
-            "sale_percent": str(int(product.sale_percent)) + "%",
-            "price_after_sale": product.price_after_sale ,
-            "main_image": product.get_image_url(),
-        }
-        products.append(product_data)
-    
-
-    # select only name from the category
-    categories = Category.objects.all().values('name')[:5]
-
 
     def get(self, request, *args, **kwargs):
 
+        products = []
+
+        for product in Product.objects.order_by('category').distinct('category')[:5]:
+
+            product_data = {
+                "id": product.id,
+                "name": product.name,
+                "description": product.description,
+                "price": float(product.price),
+                "on_sale": product.on_sale,
+                "color": product.color,
+                "sale_percent": str(int(product.sale_percent)) + "%",
+                "price_after_sale": product.price_after_sale ,
+                "main_image": product.get_image_url(),
+            }
+            products.append(product_data)
+    
+
+        # select only name from the category
+        categories = Category.objects.all().values('name')[:5]
+
         return Response(
             {
-                "categories": list(self.categories), 
-                "products": list(self.products),
+                "categories": list(categories), 
+                "products": list(products),
             }
         )
 

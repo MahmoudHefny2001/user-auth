@@ -15,7 +15,7 @@ class Wishlist(TimeStampedModel):
         verbose_name = "Wishlist"
         verbose_name_plural = "Wishlists"
         ordering = ["-created"]
-    
+        unique_together = ["customer", "product"]
 
     def __str__(self):
         return f"{self.customer} - {self.product}"

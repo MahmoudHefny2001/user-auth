@@ -97,8 +97,8 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=500),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=2),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=4),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": False,
@@ -284,8 +284,8 @@ CORS_ALLOWED_ORIGINS = [
 
 
 JAZZMIN_SETTINGS = {
-# "site_title": "Digital Hub",
-# "site_header": "Digital Hub",
+"site_title": "Digital Hub",
+"site_header": "Digital Hub",
 # "site_brand": "",
 # "site_logo": "",
 # "site_logo_classes": "img-circle",
@@ -297,7 +297,7 @@ JAZZMIN_SETTINGS = {
 # "show_ui_builder": True,
 
 "usermenu_links": [
-     {'name':"Support", "url":"https://www.facebook.com/"},
+     {'name':"Support", "url":"https://www.linkedin.com/in/mahmoud-hefny-622b721a9/"},
     ],
 }
 

@@ -36,19 +36,20 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
         exclude = ['created', 'modified', 'quantity']
         depth = 2
 
-    product_attachments = []
-# 
-    for attachment in ProductAttachment.objects.select_related('product').all():
-        product_attachments.append(attachment.get_attachment_url())
-
     def to_representation(self, instance):
+
+        product_attachments = []
+# 
+        for attachment in ProductAttachment.objects.select_related('product').all():
+            product_attachments.append(attachment.get_attachment_url())
+
         representation = super().to_representation(instance)
         representation['category'] = {
             "id": instance.category.id,
             "name": instance.category.name
         }
         representation['sale_percent'] = str(int(instance.sale_percent)) + '%'
-        representation['images'] = list(self.product_attachments)
+        representation['images'] = list(product_attachments)
         return representation
     
 

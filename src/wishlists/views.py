@@ -32,6 +32,16 @@ class WishList(viewsets.ModelViewSet):
         product = Product.objects.get(id=request.data.get('product_id'))
         customer = Customer.objects.get(id=request.user.customer.id)
 
+        # Check if the user adding the product to the wishlist didn't add it before
+        if Wishlist.objects.filter(customer=customer, product=product).exists():
+            return Response(
+                {
+                    "message": "Product already added to wishlist.",
+                    
+                },
+                status=400
+            )
+
         if product and customer:
             whishlist_product = Wishlist.objects.create(customer=customer, product=product)
             whishlist_product.save()
@@ -54,6 +64,15 @@ class WishList(viewsets.ModelViewSet):
     def delete(self, request, *args, **kwargs):
         product = Product.objects.get(id=request.data.get('product_id'))
         customer = Customer.objects.get(id=request.user.customer.id)
+
+        if not Wishlist.objects.filter(customer=customer, product=product).exists():
+            return Response(
+                {
+                    "message": "Product not found in wishlist.",
+                    
+                },
+                status=400
+            )
 
         if product and customer:
             whishlist_product = Wishlist.objects.get(customer=customer, product=product)

@@ -8,6 +8,8 @@ from django.conf import settings
 
 from decimal import Decimal
 
+from customers.models import Customer
+
 
 class Category(TimeStampedModel):
     name = models.CharField(max_length=255)
@@ -24,6 +26,8 @@ class Category(TimeStampedModel):
 
 class Product(TimeStampedModel):
 
+    bar_code = models.CharField(max_length=255, null=True, blank=True, unique=True, db_index=True)
+
     name = models.CharField(max_length=255)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -37,11 +41,13 @@ class Product(TimeStampedModel):
     sale_percent = models.IntegerField(default=0, null=True, blank=True)
     price_after_sale = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
+    color = models.CharField(max_length=255, null=True, blank=True,)
+
 
     def get_reviews(self):
         return ProductReview.objects.filter(product=self)
 
-
+    
     def get_attachments(self):
         return ProductAttachment.objects.filter(product=self)
     
@@ -67,7 +73,6 @@ class Product(TimeStampedModel):
     
     def get_image_url(self):
         if self.image:
-            print(self.image.url)
             # return the full http url of the image
             return f"{settings.HOST_URL}{self.image.url}"
         return None
@@ -92,12 +97,12 @@ class ProductReport(TimeStampedModel):
 
 class ProductReview(TimeStampedModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="reviews")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="reviews")
     rating = models.IntegerField()
     review = models.TextField()
     
     def __str__(self):
-        return f"{self.product} - {self.user}"
+        return f"{self.product} - {self.customer.full_name}"
     
     class Meta:
         db_table = "product_reviews"
