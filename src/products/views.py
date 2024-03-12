@@ -35,10 +35,11 @@ class HomeViewSet(views.APIView):
                 "description": product.description,
                 "price": float(product.price),
                 "on_sale": product.on_sale,
-                "color": product.color,
+                "colors": product.colors,
                 "sale_percent": str(int(product.sale_percent)) + "%",
                 "price_after_sale": product.price_after_sale ,
                 "main_image": product.get_image_url(),
+                "average_rating": product.average_rating,
             }
             products.append(product_data)
     

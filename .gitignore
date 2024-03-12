@@ -27,6 +27,17 @@ share/python-wheels/
 MANIFEST
 
 
+todo.txt
+*todo
+*TODO
+*TODO.txt
+*TODO.md
+*/TODO
+*/TODO.txt
+*/todo
+*/todo.txt
+
+
 *images/
 *images/*
 */images/*/*

@@ -1,8 +1,8 @@
 from django.db import models
 
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
-from .validators import valid_username, valid_phone_number, valid_password
+from .validators import valid_phone_number
 
 from .managers import UserManager
 

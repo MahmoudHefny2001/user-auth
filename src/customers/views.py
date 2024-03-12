@@ -15,8 +15,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from django.core.cache import cache
 
-
+from users.customJWT import RedisBlacklistMixin, CustomJWTAuthenticationClass
 
 class CustomerSignupView(APIView):
     """
@@ -79,7 +80,7 @@ class CustomerProfileViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CustomerProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
     throttle_classes = [UserRateThrottle, AnonRateThrottle]
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [JWTAuthentication,]
 
     def get_queryset(self):
         return CustomerProfile.objects.filter(customer=self.request.user)
@@ -127,35 +128,20 @@ class CustomerProfileViewSet(viewsets.ModelViewSet):
     
 
 
-class CustomerLogoutView(APIView):
+class CustomerLogOutView(APIView):
     """
     This endpoint allows a user to logout.
     """
     permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [JWTAuthentication,]
 
     def post(self, request, *args, **kwargs):
         try:
-            refresh_token = request.data["refresh"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response(status=status.HTTP_205_RESET_CONTENT)
+            # Handle blacklisting and logout using access_token and custom JWT authentication class with redis
+            access_token = request.headers.get("Authorization").split(" ")[1]
+            CustomJWTAuthenticationClass().blacklist_token(access_token)
+            return Response(status=status.HTTP_205_RESET_CONTENT, data={"message": "Logged out successfully"})            
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': str(e)}, status=400)
 
 
-class BlacklistTokenView(APIView):
-    """
-    This endpoint allows a user to blacklist a token.
-    """
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
-
-    def post(self, request, *args, **kwargs):
-        try:
-            refresh_token = request.data["refresh"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response(status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)

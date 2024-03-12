@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Category, ProductReport, ProductReview, ProductAttachment
+from .models import Product, Category, ProductAttachment
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -24,6 +24,7 @@ class GetProductsSerializer(serializers.ModelSerializer):
             "id": instance.category.id,
             "name": instance.category.name
         }
+        representation['average_rating'] = instance.average_rating
         representation['sale_percent'] = str(int(instance.sale_percent)) + '%'
         return representation
     
@@ -50,6 +51,10 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
         }
         representation['sale_percent'] = str(int(instance.sale_percent)) + '%'
         representation['images'] = list(product_attachments)
+
+        representation['average_rating'] = instance.average_rating
+        representation['reviews'] = instance.get_reviews()
+
         return representation
     
 

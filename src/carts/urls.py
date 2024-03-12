@@ -6,9 +6,8 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 
-router.register(r"^my-wishlist", views.WishListViewSet, basename="wishlist")
+router.register(r"^my-cart", views.CartViewSet, basename="cart")
 
 urlpatterns = [
-    path("", include(router.urls)),
-    
+    path("", include(router.urls)),    
 ]

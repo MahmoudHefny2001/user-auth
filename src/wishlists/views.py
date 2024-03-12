@@ -11,11 +11,13 @@ from products.models import Product
 
 from customers.models import Customer
 
+from users.customJWT import CustomJWTAuthenticationClass
 
-class WishList(viewsets.ModelViewSet):
+
+class WishListViewSet(viewsets.ModelViewSet):
     queryset = Wishlist.objects.filter()
     permission_classes = [IsAuthenticated,]
-    authentication_classes = [JWTAuthentication,]
+    authentication_classes = [CustomJWTAuthenticationClass, JWTAuthentication,]
     serializer_class = WishListSerializer
 
     throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
@@ -62,6 +64,13 @@ class WishList(viewsets.ModelViewSet):
         
 
     def delete(self, request, *args, **kwargs):
+
+        """
+        We can delete from the wishlist by sending the product id in the request body.
+        Also we can delete from wishlist by sending the wishlist object id itself but here we go along with the product id.
+        """
+
+
         product = Product.objects.get(id=request.data.get('product_id'))
         customer = Customer.objects.get(id=request.user.customer.id)
 

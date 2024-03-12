@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
-from .models import Wishlist
+from .models import Cart
 
-class WishListSerializer(serializers.ModelSerializer):
+class CartSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Wishlist
+        model = Cart
         # fields = "__all__"
-        exclude = ['customer', ]
+        exclude = ['customer', 'created', 'modified',]
         depth = 1
         read_only_fields = ['product', 'category']
 
@@ -16,8 +16,8 @@ class WishListSerializer(serializers.ModelSerializer):
 
         representation['product'] = {
             "id": instance.product.id,
-            "color": instance.product.color,
             "name": instance.product.name,
+            "colors": instance.product.colors,
             "description": instance.product.description,
             "price": float(instance.product.price),
             "on_sale": instance.product.on_sale,

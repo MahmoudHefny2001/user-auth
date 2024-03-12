@@ -5,6 +5,7 @@ from django.db.models import Q
 from .models import User
 
 
+
 class CustomUserAuthenticationBackend(ModelBackend):
     """
     This is a custom authentication backend for the Person model.
@@ -15,9 +16,7 @@ class CustomUserAuthenticationBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None, **kwargs):        
         try:
-            user = User.objects.get(Q(email=username) | Q(phone_number=username) 
-                                    # | Q(username=username)
-                    )
+            user = User.objects.get(Q(email=username) | Q(phone_number=username))
         except User.DoesNotExist:
             return None
         else:

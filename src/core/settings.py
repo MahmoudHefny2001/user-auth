@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'django_filters', #
     "models_extensions", #
 
+    # apps
+
     "users", #
     "products", #
     "customers", #
@@ -56,14 +58,25 @@ INSTALLED_APPS = [
     "admins", #
     "merchants", #
     "stocks", #
+    "reviews", #
+    # "payments", #
 ]
 
-
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': os.environ.get("REDIS_URL"),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
 
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "users.customJWT.CustomJWTAuthenticationClass", ##
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         'rest_framework.permissions.AllowAny',
@@ -101,7 +114,7 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=4),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
-    "UPDATE_LAST_LOGIN": False,
+    "UPDATE_LAST_LOGIN": True,
     "AUTH_HEADER_TYPES": ("JWT", "Bearer"),
     "ALGORITHM": "HS256",
     "VERIFYING_KEY": "",
@@ -132,6 +145,7 @@ SIMPLE_JWT = {
 
 
 AUTHENTICATION_BACKENDS = [
+
     'users.authentication.CustomUserAuthenticationBackend',
 
 ]
@@ -140,6 +154,7 @@ AUTHENTICATION_BACKENDS = [
 AUTH_USER_MODEL = "users.User"
 
 MIDDLEWARE = [
+
     "corsheaders.middleware.CorsMiddleware",  ##
 
     'whitenoise.middleware.WhiteNoiseMiddleware',  ##
