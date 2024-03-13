@@ -6,11 +6,23 @@ from customers.models import Customer
 
 from products.models import Product
 
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 class Order(TimeStampedModel):
+    
+    class OrderStatus(models.TextChoices):
+        PENDING = 'Pending', 'Pending'
+        PROCESSING = 'Processing', 'Processing'
+        SHIPPED = 'Shipped', 'Shipped'
+        DELIVERED = 'Delivered', 'Delivered'
+        CANCELED = 'Canceled', 'Canceled'
+
+
+    status = models.CharField(max_length=50, choices=OrderStatus.choices, default=OrderStatus.PENDING)
+
     user = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="orders")
-    products = models.ForeignKey(Product, on_delete=models.DO_NOTHING, related_name="orders")
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     
     
     class Meta:
@@ -19,17 +31,14 @@ class Order(TimeStampedModel):
         verbose_name_plural = "Orders"
         ordering = ["-created"]
         
-    def __str__(self):
-        return f"Order {self.id}"
-    
 
 
 
 class OrderItem(TimeStampedModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_items")
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, related_name="order_items")
-    quantity = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
+    sub_total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     
     class Meta:
         db_table = "order_items"
@@ -37,5 +46,3 @@ class OrderItem(TimeStampedModel):
         verbose_name_plural = "Order Items"
         ordering = ["-created"]
         
-    def __str__(self):
-        return f"Order Item {self.id}"

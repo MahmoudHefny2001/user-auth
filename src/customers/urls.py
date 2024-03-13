@@ -1,11 +1,6 @@
 from django.urls import path, include
 from . import views
 
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView,
-)
 
 from rest_framework.routers import DefaultRouter
 
@@ -20,29 +15,7 @@ urlpatterns = [
 
     path("logout/", views.CustomerLogOutView.as_view(), name="logout"),
 
-    # path("profiles/", views.CustomerProfileView.as_view(), name="profiles"),
+    path('token/refresh/', views.CustomerTokenRefreshView.as_view(), name='token_refresh'),
 
-    # path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    # path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    # path("token/blacklist/", views.BlacklistTokenView.as_view(), name="blacklist"),
-    # path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    # path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    # path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    # path("token/blacklist/", views.BlacklistTokenView.as_view(), name="blacklist"),
-    # path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    # path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    # path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    # path("token/blacklist/", views.BlacklistTokenView.as_view(), name="blacklist"),
-    # path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    # path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    # path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    # path("token/blacklist/", views.BlacklistTokenView.as_view(), name="blacklist"),
-    # path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    # path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    # path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    # path("token/blacklist/", views.BlacklistTokenView.as_view(), name="blacklist"),
-    # path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    # path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    # path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    # path("token/blacklist/", views.BlacklistTokenView.as_view(), name="blacklist"),
+    # path('account-delete/', views.CustomerDeleteView.as_view(), name='account_delete'),
 ]

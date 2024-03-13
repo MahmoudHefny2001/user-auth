@@ -26,10 +26,3 @@ class ProductReview(TimeStampedModel):
         ordering = ["-created"]
         unique_together = ["product", "customer"]
     
-
-    # average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0, null=True, blank=True, editable=False)
-    
-    
-    # def save(self, **kwargs):
-        # super(ProductReview, self).save(**kwargs)
-        # self.update_average_rating()

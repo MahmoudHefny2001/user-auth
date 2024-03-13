@@ -19,6 +19,10 @@ from django.core.cache import cache
 
 from users.customJWT import RedisBlacklistMixin, CustomJWTAuthenticationClass
 
+from rest_framework_simplejwt.views import TokenRefreshView
+
+
+
 class CustomerSignupView(APIView):
     """
     This endpoint allows a CUSTOMER to signup.
@@ -145,3 +149,21 @@ class CustomerLogOutView(APIView):
             return Response({'error': str(e)}, status=400)
 
 
+
+class CustomerTokenRefreshView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        try:
+            refresh_token = request.data.get("refresh",)
+            if refresh_token:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+                new_access_token = token.access_token
+                return Response(
+                    {
+                    'access': str(new_access_token),
+                    },
+                    status=status.HTTP_200_OK
+                )
+        except Exception as e:
+            return Response({'error': str(e)}, status=400)
+        return Response({'error': 'Invalid token'}, status=400)

@@ -9,7 +9,7 @@ This project is an E-Commerce website developed as a graduation project. It's bu
 - Create a database
 
 ## Getting Started
-    - Linux based machnine Assumed to be used
+    < Linux based machnine Assumed to be used >
     - python3 -m venv .venv
     - . .venv/bin/activate
     - cd src/

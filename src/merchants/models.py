@@ -32,6 +32,13 @@ class Merchant(MerchantBridge):
 
     address = models.TextField(blank=True, null=True)
 
+    payment_information = models.TextField(blank=True, null=True)
+
+    terms_agreement = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return self.full_name
 
     class Meta:
         db_table = "merchants"
@@ -46,12 +53,29 @@ class MerchantProfile(models.Model):
     merchant = models.OneToOneField(Merchant, on_delete=models.CASCADE, related_name='profile')
     
 
-    image = models.ImageField(upload_to='images/merchant/profiles/', blank=True, null=True)
-
-    address = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='merchant/profiles/', blank=True, null=True)
 
     merchant_zip_code = models.CharField(max_length=100, blank=True, null=True)
 
+
+    # Additional Fields
+    tax_id = models.CharField(max_length=20, blank=True, null=True)
+    logo = models.ImageField(upload_to='merchants/merchant_logos/', blank=True, null=True)
+
+    # Social Media Links
+    website_url = models.URLField(blank=True, null=True)
+    facebook_url = models.URLField(blank=True, null=True)
+    twitter_url = models.URLField(blank=True, null=True)
+    instagram_url = models.URLField(blank=True, null=True)
+    linkedin_url = models.URLField(blank=True, null=True)
+
+    # Shipping Information
+    shipping_address = models.TextField(blank=True, null=True)
+    shipping_options = models.CharField(max_length=100, choices=[('standard', 'Standard'), ('express', 'Express')], blank=True, null=True)
+
+    # Additional Business Information
+    about_us = models.TextField(blank=True, null=True)
+    return_policy = models.TextField(blank=True, null=True)
 
 
     class Meta:
