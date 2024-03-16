@@ -10,6 +10,8 @@ from django.contrib.postgres.fields import ArrayField
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from merchants.models import Merchant
+
 
 class Category(TimeStampedModel):
     name = models.CharField(max_length=255)
@@ -46,6 +48,8 @@ class Product(TimeStampedModel):
 
     average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0, null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
     
+
+    merchant = models.ForeignKey(Merchant, on_delete=models.DO_NOTHING, related_name="products", null=True, blank=True, default=None)
 
 
     def get_reviews(self):

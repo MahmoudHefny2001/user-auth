@@ -13,9 +13,17 @@ class CustomerSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
-        customer = Customer.objects.create_user(**validated_data)
-        return customer
-    
+        try:
+            email = validated_data.get("email")
+            phone_number = validated_data.get("phone_number")
+            password = validated_data.get("password")
+            full_name = validated_data.get("full_name")
+            if email is None or phone_number is None or password is None or full_name is None:
+                raise serializers.ValidationError("Please provide all required fields.")
+            customer = Customer.objects.create_user(**validated_data)
+            return customer
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
 
 
 class CustomerProfileSerializer(serializers.ModelSerializer):

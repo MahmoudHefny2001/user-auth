@@ -87,7 +87,9 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.FormParser",
         "rest_framework.parsers.MultiPartParser",
     ),
-
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
     'DEFAULT_AUTHENTICATION_BACKENDS': [
         'django.contrib.auth.backends.ModelBackend',
     ],
@@ -103,6 +105,9 @@ REST_FRAMEWORK = {
         'anon': '1000/day',
         'user': '10000/day'
     },
+
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
 }
 
 

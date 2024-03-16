@@ -5,10 +5,10 @@ from .models import Merchant, MerchantProfile
 
 
 @receiver(post_save, sender=Merchant)
-def create_merchant_profile(sender, instance, created, **kwargs):
-    try:
-        if created and instance.role == "MERCHANT":
-            merchant_profile = MerchantProfile.objects.create(merchant=instance)
-            merchant_profile.save()
-    except Exception as e:
-        print(e)
+def create_merchant_profile(sender, instance, **kwargs):
+    """
+    This method creates a merchant profile for the merchant.
+    """
+    if kwargs["created"]:
+        MerchantProfile.objects.create(merchant=instance)
+        

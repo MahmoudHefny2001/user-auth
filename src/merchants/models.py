@@ -53,13 +53,13 @@ class MerchantProfile(models.Model):
     merchant = models.OneToOneField(Merchant, on_delete=models.CASCADE, related_name='profile')
     
 
-    image = models.ImageField(upload_to='merchant/profiles/', blank=True, null=True)
+    image = models.ImageField(upload_to='merchants/profiles/', blank=True, null=True)
 
     merchant_zip_code = models.CharField(max_length=100, blank=True, null=True)
 
 
     # Additional Fields
-    tax_id = models.CharField(max_length=20, blank=True, null=True)
+    tax_id = models.CharField(max_length=100, blank=True, null=True, unique=True)
     logo = models.ImageField(upload_to='merchants/merchant_logos/', blank=True, null=True)
 
     # Social Media Links

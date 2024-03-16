@@ -15,9 +15,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from django.core.cache import cache
-
-from users.customJWT import RedisBlacklistMixin, CustomJWTAuthenticationClass
+from users.customJWT import CustomJWTAuthenticationClass
 
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -47,7 +45,7 @@ class CustomerSignupView(APIView):
 class CustomerLoginView(APIView):
 
     """
-    This endpoint allows a user to login.
+    This endpoint allows a customer to login.
     """
     permission_classes = [permissions.AllowAny]
     throttle_classes = [UserRateThrottle, AnonRateThrottle]
@@ -167,3 +165,4 @@ class CustomerTokenRefreshView(TokenRefreshView):
         except Exception as e:
             return Response({'error': str(e)}, status=400)
         return Response({'error': 'Invalid token'}, status=400)
+    
