@@ -96,7 +96,7 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
 
     throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
 
-    http_method_names   = ['get', 'retrieve', 'post', 'put', 'patch', 'delete']
+    http_method_names   = ['get', 'retrieve', 'post', 'patch', 'delete']
 
     filterset_class = ProductFilter
     filter_backends = [SearchFilter, DjangoFilterBackend]
@@ -104,7 +104,6 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
 
     
     def get_queryset(self):
-        
         return Product.objects.filter(merchant=self.request.user).order_by('-created')
     
     def get_serializer_class(self):
@@ -226,3 +225,16 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
         
         except Exception as e:
             return Response({"error": str(e)}, status=400)
+
+
+    def destroy(self, request, *args, **kwargs):
+        product = self.get_object()
+        if product.merchant != request.user.merchant:
+            return Response(
+                {
+                    "error": "You are not allowed to delete this product."
+                },
+                status=403
+            )
+        
+        return super().destroy(request, *args, **kwargs)
