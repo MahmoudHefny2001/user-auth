@@ -18,8 +18,8 @@ ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 
 HOST_URL = os.environ.get("HOST_URL")
 
-# if DEBUG:
-    # DEBUG = False
+if DEBUG:
+    DEBUG = False
 
 
 # Application definition
