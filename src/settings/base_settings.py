@@ -6,20 +6,18 @@ import os
 
 from datetime import timedelta
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
+# 
+# load_dotenv(".env.base")
 
-load_dotenv(".env")
+# SECRET_KEY = os.environ.get("SECRET_KEY", None)
 
-SECRET_KEY = os.environ.get("SECRET_KEY", None)
+# DEBUG = os.environ.get("DEBUG", True)
 
-DEBUG = os.environ.get("DEBUG", False)
+# ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 
-ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
+# HOST_URL = os.environ.get("HOST_URL")
 
-HOST_URL = os.environ.get("HOST_URL")
-
-if DEBUG:
-    DEBUG = False
 
 
 # Application definition
@@ -196,18 +194,18 @@ DATABASES = {
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
     
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "DATABASE_URL": str(os.environ.get("DATABASE_URL")),
-        "NAME": str(os.environ.get("DATABASE_NAME")),
-        "USER": str(os.environ.get("DATABASE_USER")),
-        "PASSWORD": str(os.environ.get("DATABASE_PASSWORD")),
-        "HOST": str(os.environ.get("DATABASE_HOST")),
-        "PORT": int(os.environ.get("DATABASE_PORT")),
-        # 'TEST': {
-        #     'NAME': '',
-        # },
-    }
+    # "default": {
+    #     "ENGINE": "django.db.backends.postgresql",
+    #     "DATABASE_URL": str(os.environ.get("DATABASE_URL")),
+    #     "NAME": str(os.environ.get("DATABASE_NAME")),
+    #     "USER": str(os.environ.get("DATABASE_USER")),
+    #     "PASSWORD": str(os.environ.get("DATABASE_PASSWORD")),
+    #     "HOST": str(os.environ.get("DATABASE_HOST")),
+    #     "PORT": int(os.environ.get("DATABASE_PORT")),
+    #     # 'TEST': {
+    #     #     'NAME': '',
+    #     # },
+    # }
 }
 
 
@@ -250,31 +248,15 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 
-
-RAILWAY_VOLUME_NAME = str(os.environ.get("RAILWAY_VOLUME_NAME"))
-RAILWAY_VOLUME_MOUNT_PATH = str(os.environ.get("RAILWAY_VOLUME_MOUNT_PATH"))
-
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
-
-# Media Files (uploaded from users)
-MEDIA_URL = "media/"
-MEDIA_ROOT = os.environ.get("RAILWAY_VOLUME_MOUNT_PATH")
-
-
-
 # Local static files
-# STATIC_URL = "/static/"
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-# STATIC_FILES_DIRS = [BASE_DIR / "static",]
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_FILES_DIRS = [BASE_DIR / "static",]
 
 
 # Loacl media files
-# MEDIA_URL = "media/"
-# MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+MEDIA_URL = "media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
