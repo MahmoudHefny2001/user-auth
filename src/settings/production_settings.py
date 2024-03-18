@@ -32,7 +32,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
 # Media Files (uploaded from users)
 MEDIA_URL = "media/"
-MEDIA_ROOT = os.environ.get("RAILWAY_VOLUME_MOUNT_PATH")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
 
