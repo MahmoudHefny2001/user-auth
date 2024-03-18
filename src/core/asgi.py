@@ -9,3 +9,5 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.production_settings')
 
 
 application = get_asgi_application()
+
+app = application
