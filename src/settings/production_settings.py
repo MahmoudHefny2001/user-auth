@@ -9,7 +9,7 @@ load_dotenv(".env.production")
 
 SECRET_KEY = os.environ.get("SECRET_KEY", None)
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 
@@ -33,7 +33,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 # Media Files (uploaded from users)
 # MEDIA_URL = "media/"
 # MEDIA_URL = os.environ.get("BLOB_READ_WRITE_TOKEN") ## Vercel Blob Storage
-MEDIA_URL = 'https://vpz2sexxpggaxlxl.public.blob.vercel-storage.com/' ## Vercel Blob Storage
+MEDIA_URL = 'https://vpz2sexxpggaxlxl.public.blob.vercel-storage.com/media/' ## Vercel Blob Storage
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
