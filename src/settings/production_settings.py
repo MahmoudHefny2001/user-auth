@@ -9,7 +9,7 @@ load_dotenv(".env.production")
 
 SECRET_KEY = os.environ.get("SECRET_KEY", None)
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 
@@ -26,7 +26,10 @@ cloudinary.config(
 )
 
 
-INSTALLED_APPS += 'cloudinary_storage', # Cloudinary Storage
+INSTALLED_APPS += [
+    'cloudinary_storage', # Cloudinary Storage
+    'cloudinary',      # Cloudinary
+]
 
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
