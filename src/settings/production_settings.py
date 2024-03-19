@@ -9,7 +9,7 @@ load_dotenv(".env.production")
 
 SECRET_KEY = os.environ.get("SECRET_KEY", None)
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 
@@ -20,11 +20,11 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
-cloudinary.config( 
-  	cloud_name = os.environ.get("CLOUD_NAME"),
-  	api_key = os.environ.get("API_KEY"),
-  	api_secret = os.environ.get("API_SECRET")
-)
+CLOUDINARY_STORAGE = {
+  	'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
+  	'API_KEY': os.environ.get("API_KEY"),
+  	'API_SECRET': os.environ.get("API_SECRET")
+}
 
 
 INSTALLED_APPS += [
