@@ -8,5 +8,6 @@ python3 manage.py collectstatic --no-input
 mkdir media 
 mkdir images
 
+pip3 freeze 
 
 echo "Build process complete"
