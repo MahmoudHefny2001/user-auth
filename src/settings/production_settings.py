@@ -16,6 +16,21 @@ ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 HOST_URL = os.environ.get("HOST_URL")
 
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+cloudinary.config( 
+  	cloud_name = os.environ.get("CLOUD_NAME"),
+  	api_key = os.environ.get("API_KEY"),
+  	api_secret = os.environ.get("API_SECRET")
+)
+
+
+INSTALLED_APPS += 'cloudinary_storage', # Cloudinary Storage
+
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 
 # RAILWAY_VOLUME_NAME = str(os.environ.get("RAILWAY_VOLUME_NAME"))
 # RAILWAY_VOLUME_MOUNT_PATH = str(os.environ.get("RAILWAY_VOLUME_MOUNT_PATH"))

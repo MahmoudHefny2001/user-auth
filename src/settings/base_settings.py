@@ -85,9 +85,9 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.FormParser",
         "rest_framework.parsers.MultiPartParser",
     ),
-    "DEFAULT_RENDERER_CLASSES": [
-        "rest_framework.renderers.JSONRenderer",
-    ],
+    # "DEFAULT_RENDERER_CLASSES": [
+        # "rest_framework.renderers.JSONRenderer",
+    # ],
     'DEFAULT_AUTHENTICATION_BACKENDS': [
         'django.contrib.auth.backends.ModelBackend',
     ],
@@ -185,7 +185,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
-
 
 
 DATABASES = {

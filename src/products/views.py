@@ -116,17 +116,56 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         try:
             product = Product.objects.create(
+                bar_code=request.data.get('bar_code', None),
                 merchant=request.user.merchant,
                 name=request.data.get('name'),
                 description=request.data.get('description'),
                 price=request.data.get('price'),
                 quantity=request.data.get('quantity'),
                 category_id=request.data.get('category_id'),
-                colors=request.data.get('colors'),
-                on_sale=request.data.get('on_sale'),
-                sale_percent=request.data.get('sale_percent'),
-                image=request.data.get('image'),
+                colors=request.data.get('colors', None),
+                on_sale=request.data.get('on_sale', None),
+                sale_percent=request.data.get('sale_percent', None),
+                image=request.data.get('image', None),
             )
+
+            # Split colors string into a list of strings
+            if colors is not None:
+                import re
+
+                # Regular expression pattern to split by spaces, commas, and hyphens
+                delimiter_pattern = re.compile(r'[,\s-]+')
+
+                # Split the colors string using the regular expression pattern
+                colors = delimiter_pattern.split(colors)
+                
+                if isinstance(colors, str):
+                    # Split the string using the regular expression pattern
+                    colors = delimiter_pattern.split(colors)
+                    # Remove empty strings from the list (if any)
+                    colors = [color.strip() for color in colors if color.strip()]
+                elif isinstance(colors, list):
+                    # Remove leading and trailing whitespace from each color
+                    colors = [color.strip() for color in colors]
+
+                product.colors = colors
+
+            
+
+            # Handle product attachmetns update like adding multiple images
+                
+            attachments = request.FILES.getlist('attachments', None)
+
+            if attachments:
+                for attachment in attachments:
+                    product_attachment = ProductAttachment.objects.create(
+                        product=product,
+                        attachment=attachment
+                    )
+                    product_attachment.save()
+            
+
+
             product.save()
             return Response(
                 {

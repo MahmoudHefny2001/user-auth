@@ -3,9 +3,6 @@
 import os
 import sys
 
-from settings import base_settings
-
-
 def main():
     """Run administrative tasks."""
 
