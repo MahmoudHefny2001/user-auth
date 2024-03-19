@@ -16,24 +16,24 @@ ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 HOST_URL = os.environ.get("HOST_URL")
 
 
-# import cloudinary
-# import cloudinary.uploader
-# import cloudinary.api
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
-# cloudinary.config( 
-#   	cloud_name = os.environ.get("CLOUD_NAME"),
-#   	api_key = os.environ.get("API_KEY"),
-#   	api_secret = os.environ.get("API_SECRET")
-# )
+cloudinary.config( 
+  	cloud_name = os.environ.get("CLOUD_NAME"),
+  	api_key = os.environ.get("API_KEY"),
+  	api_secret = os.environ.get("API_SECRET")
+)
 
 
-# INSTALLED_APPS += [
-#     'cloudinary_storage', # Cloudinary Storage
-#     'cloudinary',      # Cloudinary
-# ]
+INSTALLED_APPS += [
+    'cloudinary_storage', # Cloudinary Storage
+    'cloudinary',      # Cloudinary
+]
 
-# MEDIA_URL = '/media/'  # or any prefix you choose
-# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+MEDIA_URL = '/media/'  # or any prefix you choose
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 # RAILWAY_VOLUME_NAME = str(os.environ.get("RAILWAY_VOLUME_NAME"))
@@ -50,10 +50,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
 
 # Media Files (uploaded from users)
-MEDIA_URL = "media/"
+# MEDIA_URL = "media/"
 # MEDIA_URL = os.environ.get("BLOB_READ_WRITE_TOKEN") ## Vercel Blob Storage
 # MEDIA_URL = 'https://vpz2sexxpggaxlxl.public.blob.vercel-storage.com/media/' ## Vercel Blob Storage
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
 
