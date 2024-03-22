@@ -74,6 +74,9 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
             "name": instance.category.name
         }
 
+        if not instance.colors:
+            del representation['colors']
+
         if not instance.on_sale:
             del representation['sale_percent']
             del representation['price_after_sale']
