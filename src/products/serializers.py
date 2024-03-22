@@ -30,8 +30,8 @@ class GetProductsSerializer(serializers.ModelSerializer):
 
 
         if not instance.image or instance.image == 'null':
-            # representation['image'] = 'images/default-product-image.jpg'
-            representation['image'] = None
+            representation['image'] = '../utils/black.jpg'
+            # representation['image'] = None
 
         
         if not instance.on_sale or instance.on_sale == 'null':
@@ -63,8 +63,8 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
 
         product_attachments = []
 # 
-        for attachment in ProductAttachment.objects.select_related('product').all():
-            product_attachments.append(attachment.get_attachment_url())
+        for attachment in ProductAttachment.objects.filter(product=instance):
+            product_attachments.append(attachment)
 
         representation = super().to_representation(instance)
         representation['category'] = {
