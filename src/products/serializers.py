@@ -64,7 +64,7 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
         product_attachments = []
 # 
         for attachment in ProductAttachment.objects.filter(product=instance):
-            product_attachments.append(attachment)
+            product_attachments.append(attachment.get_attachment_url())
 
         representation = super().to_representation(instance)
         representation['category'] = {

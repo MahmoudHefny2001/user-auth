@@ -105,7 +105,9 @@ class ProductAttachment(TimeStampedModel):
     def get_attachment_url(self):
         # return the full http url of the attachment
         if self.attachment:
-            return f"{settings.HOST_URL}{self.attachment.url}"
+            if settings.HOST_URL:
+                return f"{settings.HOST_URL}{self.attachment.url}"
+            return self.attachment.url
         return None
     
     def __str__(self):
