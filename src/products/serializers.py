@@ -30,7 +30,9 @@ class GetProductsSerializer(serializers.ModelSerializer):
 
 
         if not instance.image or instance.image == 'null':
-            representation['image'] = 'images/default-product-image.jpg'
+            # representation['image'] = 'images/default-product-image.jpg'
+            representation['image'] = None
+
         
         if not instance.on_sale or instance.on_sale == 'null':
             representation['on_sale'] = False
