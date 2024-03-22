@@ -7,8 +7,9 @@ def main():
     """Run administrative tasks."""
 
 
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.production_settings')
+    # os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.production_settings')   # for vercel deployment
     
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.local_settings')  # for local development
     
     try:
         from django.core.management import execute_from_command_line
