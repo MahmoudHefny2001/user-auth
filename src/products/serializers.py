@@ -48,6 +48,8 @@ class GetProductsSerializer(serializers.ModelSerializer):
                 "address": instance.merchant.address,
             }
 
+        del representation['colors']
+
         return representation
     
 
