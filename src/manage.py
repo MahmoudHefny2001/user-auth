@@ -8,6 +8,7 @@ def main():
 
 
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.production_settings')
+    # os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.local_settings')
     
     
     try:

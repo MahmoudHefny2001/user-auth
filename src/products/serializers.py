@@ -27,12 +27,24 @@ class GetProductsSerializer(serializers.ModelSerializer):
         representation['average_rating'] = instance.average_rating
         if instance.sale_percent:
             representation['sale_percent'] = str(int(instance.sale_percent)) + '%'
+
+
+        if not instance.image or instance.image == 'null':
+            representation['image'] = 'images/default-product-image.jpg'
         
-        representation['merchant'] = {
-            "merchant_name": instance.merchant.full_name,
-            "phone": instance.merchant.phone_number,
-            "address": instance.merchant.address,
-        } 
+        if not instance.on_sale or instance.on_sale == 'null':
+            representation['on_sale'] = False
+        
+        if not instance.on_sale:
+            del representation['sale_percent']
+            del representation['price_after_sale']
+
+        if instance.merchant:
+            representation['merchant'] = {
+                "merchant_name": instance.merchant.full_name,
+                "phone": instance.merchant.phone_number,
+                "address": instance.merchant.address,
+            }
 
         return representation
     
@@ -57,6 +69,14 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
             "id": instance.category.id,
             "name": instance.category.name
         }
+
+        if not instance.on_sale:
+            del representation['sale_percent']
+            del representation['price_after_sale']
+
+        if not instance.on_sale or instance.on_sale == 'null':
+            representation['on_sale'] = False
+
         if instance.sale_percent:
             representation['sale_percent'] = str(int(instance.sale_percent)) + '%'
         representation['images'] = list(product_attachments)
@@ -64,11 +84,12 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
         representation['average_rating'] = instance.average_rating
         representation['reviews'] = instance.get_reviews()
 
-        representation['merchant'] = {
-            "merchant_name": instance.merchant.full_name,
-            "phone": instance.merchant.phone_number,
-            "address": instance.merchant.address,
-        } 
+        if instance.merchant:
+            representation['merchant'] = {
+                "merchant_name": instance.merchant.full_name,
+                "phone": instance.merchant.phone_number,
+                "address": instance.merchant.address,
+            } 
 
         return representation
     
@@ -89,9 +110,10 @@ class GetProductsSerializerForMerchants(serializers.ModelSerializer):
             "name": instance.category.name
         }
         representation['average_rating'] = instance.average_rating
+
         if instance.sale_percent:
             representation['sale_percent'] = str(int(instance.sale_percent)) + '%'
-
+        
         
         return representation
     

@@ -7,9 +7,9 @@ python3 manage.py makemigrations
 python3 manage.py migrate
 python3 manage.py collectstatic --no-input
 
-mkdir media 
+mkdir media
 mkdir images
 
-pip3 freeze 
+pip3 freeze
 
 echo "Build process complete"

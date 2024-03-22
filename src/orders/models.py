@@ -8,6 +8,8 @@ from products.models import Product
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from carts.models import Cart
+
 
 class Order(TimeStampedModel):
     
@@ -35,7 +37,7 @@ class Order(TimeStampedModel):
 
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     
-    cart = models.ForeignKey('carts.Cart', on_delete=models.DO_NOTHING, related_name="orders", null=True, blank=True)
+    cart = models.ForeignKey(Cart, on_delete=models.DO_NOTHING, related_name="orders", null=True, blank=True)
     
     shipping_address = models.TextField(null=True, blank=True)
 

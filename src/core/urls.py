@@ -24,6 +24,7 @@ from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
     path("customers/", include("customers.urls")), #
 
     path("api/", include("products.urls")), #

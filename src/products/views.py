@@ -127,7 +127,23 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
                 on_sale=request.data.get('on_sale', None),
                 sale_percent=request.data.get('sale_percent', None),
                 image=request.data.get('image', None),
+
+                attachments = request.FILES.getlist('attachments', None)
             )
+
+
+            # Handle product attachmetns creation like adding multiple images
+                
+            attachments = request.FILES.getlist('attachments', None)
+
+            if attachments:
+                for attachment in attachments:
+                    product_attachment = ProductAttachment.objects.create(
+                        product=product,
+                        attachment=attachment
+                    )
+                    product_attachment.save()
+
 
             # Split colors string into a list of strings
             if colors is not None:
@@ -149,21 +165,6 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
                     colors = [color.strip() for color in colors]
 
                 product.colors = colors
-
-            
-
-            # Handle product attachmetns update like adding multiple images
-                
-            attachments = request.FILES.getlist('attachments', None)
-
-            if attachments:
-                for attachment in attachments:
-                    product_attachment = ProductAttachment.objects.create(
-                        product=product,
-                        attachment=attachment
-                    )
-                    product_attachment.save()
-            
 
 
             product.save()
