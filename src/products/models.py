@@ -77,6 +77,8 @@ class Product(TimeStampedModel):
             self.price_after_sale = self.price - (self.price * Decimal(self.sale_percent) / 100)
         else:
             self.price_after_sale = self.price
+            self.sale_percent = 0
+            
         super(Product, self).save(**kwargs)
 
 
@@ -93,7 +95,8 @@ class Product(TimeStampedModel):
     def get_image_url(self):
         # return the full http url of the image
         if self.image:
-            return f"{settings.HOST_URL}{self.image.url}"
+            # return f"{settings.HOST_URL}{self.image.url}"
+            return self.image.url
         return None
 
 
