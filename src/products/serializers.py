@@ -19,6 +19,7 @@ class GetProductsSerializer(serializers.ModelSerializer):
         depth = 1
 
     def to_representation(self, instance):
+                
         representation = super().to_representation(instance)
         representation['category'] = {
             "id": instance.category.id,
@@ -28,11 +29,12 @@ class GetProductsSerializer(serializers.ModelSerializer):
         if instance.sale_percent:
             representation['sale_percent'] = str(int(instance.sale_percent)) + '%'
         
-        representation['merchant'] = {
-            "merchant_name": instance.merchant.full_name,
-            "phone": instance.merchant.phone_number,
-            "address": instance.merchant.address,
-        } 
+        if instance.merchant:
+            representation['merchant'] = {
+                "merchant_name": instance.merchant.full_name,
+                "phone": instance.merchant.phone_number,
+                "address": instance.merchant.address,
+            }
 
         return representation
     

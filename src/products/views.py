@@ -63,7 +63,7 @@ class HomeViewSet(views.APIView):
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.filter(available=True).order_by('-created')
     # serializer_class = GetProductsSerializer
     permission_classes = [AllowAny]
     authentication_classes = [JWTAuthentication,]
