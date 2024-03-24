@@ -29,7 +29,7 @@ class WishListSerializer(serializers.ModelSerializer):
             }
         }
 
-        if instance.on_sale:
+        if instance.product.on_sale:
             """
             if the product is on sale, we add the sale percent to the representation 
             the sale percent is a string and it is the percentage of the sale
