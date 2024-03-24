@@ -6,7 +6,7 @@ class WishListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wishlist
         # fields = "__all__"
-        exclude = ['customer', ]
+        exclude = ['customer', 'modified',]
         depth = 1
         read_only_fields = ['product', 'category']
 
@@ -28,5 +28,13 @@ class WishListSerializer(serializers.ModelSerializer):
                 "name": instance.product.category.name
             }
         }
+
+        if instance.on_sale:
+            """
+            if the product is on sale, we add the sale percent to the representation 
+            the sale percent is a string and it is the percentage of the sale
+            """
+            representation['product']['sale_percent'] = str(int(instance.product.sale_percent)) + '%'
+            representation['product']['price_after_sale'] = instance.product.price_after_sale
 
         return representation
