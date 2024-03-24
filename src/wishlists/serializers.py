@@ -16,7 +16,7 @@ class WishListSerializer(serializers.ModelSerializer):
 
         representation['product'] = {
             "id": instance.product.id,
-            "color": instance.product.color,
+            "colors": instance.product.colors,
             "name": instance.product.name,
             "description": instance.product.description,
             "price": float(instance.product.price),
