@@ -19,5 +19,9 @@ urlpatterns = [
 
     # path('account-delete/', views.MerchantDeleteView.as_view(), name='account_delete'),
 
+    # path('password-reset/', views.CustomerPasswordResetView.as_view(), name='password_reset'),
+    # path('forget-password/', views.CustomerPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    # path('confirm-email/', views.CustomerEmailVerificationView.as_view(), name='email_verification'),
+
 ]
 

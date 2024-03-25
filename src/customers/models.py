@@ -47,7 +47,7 @@ class CustomerProfile(models.Model):
     
     birth_date = models.DateField(blank=True, null=True)
 
-    image = models.ImageField(upload_to='images/customers/profiles/', blank=True, null=True, default='../utils/black.jpg')
+    image = models.ImageField(upload_to='images/customers/profiles/', blank=True, null=True, default='blanck.jpg')
 
     bio = models.TextField(blank=True, null=True)
 
@@ -56,6 +56,9 @@ class CustomerProfile(models.Model):
         verbose_name = "Customer Profile"
         verbose_name_plural = "Customer Profiles"
 
+
+    def __str__(self):
+        return f"{self.customer.full_name} Profile"
     
     # account_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     # points = models.PositiveIntegerField(default=0)

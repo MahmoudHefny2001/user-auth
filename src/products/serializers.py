@@ -3,6 +3,11 @@ from .models import Product, Category, ProductAttachment
 
 
 class CategorySerializer(serializers.ModelSerializer):
+
+    """
+    Category Serializer this is used to serialize the category model
+    """
+
     class Meta:
         model = Category
         # fields = "__all__"
@@ -11,11 +16,18 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GetProductsSerializer(serializers.ModelSerializer):
+
+    """
+    Get Products Serializer this is used to serialize the product model
+    and it is being used in the GET all products endpoint
+    """
+
+
     category = CategorySerializer()
     class Meta:
         model = Product
         # fields = "__all__"
-        exclude = ['created', 'modified', 'quantity', 'merchant',]
+        exclude = ['created', 'modified', 'quantity', 'merchant', 'colors', 'bar_code']
         depth = 1
 
     def to_representation(self, instance):
@@ -24,8 +36,13 @@ class GetProductsSerializer(serializers.ModelSerializer):
             "id": instance.category.id,
             "name": instance.category.name
         }
+
         representation['average_rating'] = instance.average_rating
         if instance.sale_percent:
+            """
+            if the product is on sale, we add the sale percent to the representation 
+            the sale percent is a string and it is the percentage of the sale
+            """
             representation['sale_percent'] = str(int(instance.sale_percent)) + '%'
 
 
@@ -38,6 +55,9 @@ class GetProductsSerializer(serializers.ModelSerializer):
             representation['on_sale'] = False
         
         if not instance.on_sale:
+            """
+            if the product is not on sale, we remove the sale percent and price after sale from the representation
+            """
             del representation['sale_percent']
             del representation['price_after_sale']
 
@@ -48,17 +68,22 @@ class GetProductsSerializer(serializers.ModelSerializer):
                 "address": instance.merchant.address,
             }
 
-        del representation['colors']
 
         return representation
     
 
 
 class RetrieveProductsSerializer(serializers.ModelSerializer):
+
+    """
+    Retrieve Products Serializer this is used to serialize the product model
+    and it is being used in the GET single product endpoint
+    """
+
     class Meta:
         model = Product
         # fields = "__all__"
-        exclude = ['created', 'modified', 'quantity', 'merchant',]
+        exclude = ['created', 'modified', 'quantity', 'merchant', 'bar_code']
         depth = 2
 
     def to_representation(self, instance):
@@ -78,6 +103,9 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
             del representation['colors']
 
         if not instance.on_sale:
+            """
+            if the product is not on sale, we remove the sale percent and price after sale from the representation
+            """
             del representation['sale_percent']
             del representation['price_after_sale']
 
@@ -98,16 +126,32 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
                 "address": instance.merchant.address,
             } 
 
+        if not instance.image or instance.image == 'null':
+            representation['image'] = '../utils/black.jpg'
+            # representation['image'] = None
+        
+        if not instance.on_sale or instance.on_sale == 'null':
+            representation['on_sale'] = False
+
+            del representation['sale_percent']
+            del representation['price_after_sale']
+        
         return representation
     
 
 
 class GetProductsSerializerForMerchants(serializers.ModelSerializer):
+    
+    """
+    Get Products Serializer for Merchants this is used to serialize the product model
+    and it is being used in the GET all products endpoint for merchants
+    """
+    
     category = CategorySerializer()
     class Meta:
         model = Product
         # fields = "__all__"
-        exclude = ['created', 'modified', 'quantity', 'merchant',]
+        exclude = ['created', 'modified', 'merchant',]
         depth = 1
 
     def to_representation(self, instance):
@@ -127,10 +171,16 @@ class GetProductsSerializerForMerchants(serializers.ModelSerializer):
 
 
 class RetrieveProductsSerializerForMerchants(serializers.ModelSerializer):
+
+    """
+    Retrieve Products Serializer for Merchants this is used to serialize the product model
+    and it is being used in the GET single product endpoint for merchants
+    """
+
     class Meta:
         model = Product
         # fields = "__all__"
-        exclude = ['created', 'modified', 'quantity', 'merchant',]
+        exclude = ['created', 'modified', 'merchant',]
         depth = 2
 
     def to_representation(self, instance):
@@ -164,3 +214,5 @@ class RetrieveProductsSerializerForMerchants(serializers.ModelSerializer):
         for image_data in images_data.values():
             ProductAttachment.objects.create(product=product, attachment=image_data)
         return product
+
+

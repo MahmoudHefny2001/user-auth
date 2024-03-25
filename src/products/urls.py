@@ -14,5 +14,5 @@ router.register(r"^products-for-merchants", views.ProductViewSetForMerchants, ba
 urlpatterns = [
     path("", include(router.urls)),
     path('home/', views.HomeViewSet.as_view(), name='home'),
-
+    path('categories/', views.CategoryViewSet.as_view(), name='categories'),
 ]

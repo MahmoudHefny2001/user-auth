@@ -22,8 +22,8 @@ class WishListSerializer(serializers.ModelSerializer):
             "price": float(instance.product.price),
             "on_sale": instance.product.on_sale,
             "main_image": instance.product.get_image_url(),
-            "sale_percent": str(int(instance.product.sale_percent)) + "%",
-            "price_after_sale": instance.product.price_after_sale ,
+            # "sale_percent": str(int(instance.product.sale_percent)) + "%",
+            # "price_after_sale": instance.product.price_after_sale ,
             "category": {
                 "name": instance.product.category.name
             }

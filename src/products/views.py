@@ -1,6 +1,6 @@
 from rest_framework import viewsets, views
 from .models import Product, Category, ProductAttachment
-from .serializers import GetProductsSerializer, RetrieveProductsSerializer, GetProductsSerializerForMerchants, RetrieveProductsSerializerForMerchants
+from .serializers import GetProductsSerializer, RetrieveProductsSerializer, GetProductsSerializerForMerchants, RetrieveProductsSerializerForMerchants, CategorySerializer
 
 from rest_framework.permissions import AllowAny
 
@@ -21,7 +21,37 @@ from rest_framework.permissions import IsAuthenticated
 # from .permissions import IsMerchant
 
 
+
+class CategoryViewSet(views.APIView):
+
+    """
+    Category ViewSet this is used to get all categories
+    """
+
+    permission_classes = [AllowAny]
+    throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
+
+    def get(self, request, *args, **kwargs):
+
+        categories = Category.objects.all()
+        return Response(
+            {
+                # RETURN THE NAME AND ID OF THE CATEGORY ONLY NOT THE DESCRIPTION
+                "categories": list(categories.values('name', 'id'))
+                # "categories": CategorySerializer(categories, many=True).data
+            }
+        )
+
+
+
+
+
 class HomeViewSet(views.APIView):
+
+
+    """
+    Home ViewSet this is used to get the top 5 categories and products
+    """
     
     throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
 
@@ -63,7 +93,13 @@ class HomeViewSet(views.APIView):
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
+
+    """
+    Product ViewSet this is used to get all products and retrieve a single product
+    """
+
+
+    queryset = Product.objects.filter(available=True).order_by('-created')
     # serializer_class = GetProductsSerializer
     permission_classes = [AllowAny]
     authentication_classes = [JWTAuthentication,]
@@ -79,6 +115,11 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     
     def get_serializer_class(self):
+        """
+        This method returns a serializer class based on the action.
+        if the REQUEST is list /(GET all products)/ it returns GetProductsSerializer FOR LISTING ALL PRODUCTS
+        if the REQUEST is retrieve /(GET single product)/ it returns RetrieveProductsSerializer FOR RETRIEVING A SINGLE PRODUCT
+        """
         if self.action == 'list':
             return GetProductsSerializer
         else:
@@ -87,6 +128,12 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 class ProductViewSetForMerchants(viewsets.ModelViewSet):
+    
+    """
+    Product ViewSet for Merchants.
+    """
+
+
     queryset = Product.objects.all()
     permission_classes = [
         IsAuthenticated, 
@@ -104,9 +151,17 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
 
     
     def get_queryset(self):
+        """
+        This view should return a list of all the products that belong to the currently authenticated merchant.
+        """
         return Product.objects.filter(merchant=self.request.user).order_by('-created')
     
     def get_serializer_class(self):
+        """
+        This method returns a serializer class based on the action.
+        if the REQUEST is list /(GET all products)/ it returns GetProductsSerializerForMerchants FOR LISTING ALL PRODUCTS
+        if the REQUEST is retrieve /(GET single product)/ it returns RetrieveProductsSerializerForMerchants FOR RETRIEVING A SINGLE PRODUCT
+        """
         if self.action == 'list':
             return GetProductsSerializerForMerchants
         else:
@@ -114,6 +169,9 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
     
 
     def create(self, request, *args, **kwargs):
+        """
+        This method is used to create a product for the currently authenticated merchant.
+        """
         try:
             product = Product.objects.create(
                 bar_code=request.data.get('bar_code', None),
@@ -164,6 +222,12 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
                     # Remove leading and trailing whitespace from each color
                     colors = [color.strip() for color in colors]
 
+                """
+                - input colors example: 'red', 'blue'- 'green'
+                
+                - assigned colors output after processing: ['red', 'blue', 'green']
+                """
+
                 product.colors = colors
 
 
@@ -181,6 +245,11 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
     
 
     def partial_update(self, request, *args, **kwargs):
+
+        """
+        This method is used to update a product for the currently authenticated merchant.
+        """
+
         product = self.get_object()
         
         if product.merchant != request.user.merchant:
@@ -267,7 +336,12 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
             return Response({"error": str(e)}, status=400)
 
 
+
     def destroy(self, request, *args, **kwargs):
+        """
+        This method is used to delete a product for the currently authenticated merchant.
+        """
+        
         product = self.get_object()
         if product.merchant != request.user.merchant:
             return Response(
@@ -278,3 +352,4 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
             )
         
         return super().destroy(request, *args, **kwargs)
+    
