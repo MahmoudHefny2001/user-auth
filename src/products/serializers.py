@@ -135,8 +135,10 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
         if not instance.on_sale or instance.on_sale == 'null':
             representation['on_sale'] = False
 
-            del representation['sale_percent']
-            del representation['price_after_sale']
+            if 'sale_percent' in representation:
+                del representation['sale_percent']
+            if 'price_after_sale' in representation:
+                del representation['price_after_sale']
         
         return representation
     
