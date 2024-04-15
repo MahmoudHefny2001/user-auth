@@ -58,8 +58,10 @@ class GetProductsSerializer(serializers.ModelSerializer):
             """
             if the product is not on sale, we remove the sale percent and price after sale from the representation
             """
-            del representation['sale_percent']
-            del representation['price_after_sale']
+            if 'sale_percent' in representation:
+                del representation['sale_percent']
+            if 'price_after_sale' in representation:
+                del representation['price_after_sale']
 
         if instance.merchant:
             representation['merchant'] = {
