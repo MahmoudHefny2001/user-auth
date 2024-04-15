@@ -85,17 +85,21 @@ class CustomerProfileViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication,]
 
     def get_queryset(self):
+        if self.request.user.is_superuser:
+            return CustomerProfile.objects.all()
+         
         return CustomerProfile.objects.filter(customer=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(customer=self.request.user)
 
-    def patch(self, request, *args, **kwargs):
+    
+    def partial_update(self, request, *args, **kwargs):
         bio = request.data.get("bio", None)
         image = request.data.get("image", None)
         full_name = request.data.get("full_name", None)
         phone_number = request.data.get("phone_number", None)
-        
+
         if full_name:
             object_ = self.get_object()
             object_.customer.full_name = full_name
@@ -127,8 +131,6 @@ class CustomerProfileViewSet(viewsets.ModelViewSet):
 
         else:
             return super().partial_update(request, *args, **kwargs)
-    
-
 
 class CustomerLogOutView(APIView):
     """
