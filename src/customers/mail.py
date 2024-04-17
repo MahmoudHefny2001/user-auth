@@ -6,7 +6,7 @@ import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 
 configuration = sib_api_v3_sdk.Configuration()
-configuration.api_key['api-key'] = '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'
+configuration.api_key['api-key'] = settings.SENDINBLUE_API_KEY
 
 api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
 
