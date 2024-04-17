@@ -20,6 +20,12 @@ from users.customJWT import CustomJWTAuthenticationClass
 from rest_framework_simplejwt.views import TokenRefreshView
 
 
+import jwt
+
+from django.conf import settings
+
+from .mail import send_reset_email
+
 
 class CustomerSignupView(APIView):
     """
@@ -69,7 +75,12 @@ class CustomerLoginView(APIView):
             },
             status=status.HTTP_200_OK
             )
-        return Response("Invalid Credentials", status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+            "error": "Invalid Credentials", 
+            }, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
     
 
 
@@ -151,3 +162,56 @@ class CustomerTokenRefreshView(TokenRefreshView):
             return Response({'error': str(e)}, status=400)
         return Response({'error': 'Invalid token'}, status=400)
     
+
+class CustomerPasswordResetView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication,]
+
+    async def post(self, request, *args, **kwargs):
+        email = request.data.get('email')   
+        if not email:
+            return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            customer = Customer.objects.get(email=email)
+        except Customer.DoesNotExist:
+            return Response({'error': 'User not found with this email'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Generate JWT token
+        token = jwt.encode({'user_id': customer.pk}, settings.SECRET_KEY, algorithm='HS256')
+        
+        # Send token to user's email
+        await send_reset_email(customer.email, token)
+        
+        return Response({'success': 'Password reset token sent'}, status=status.HTTP_200_OK)
+        
+
+
+class CustomerPasswordUpdateView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication,]
+
+    def post(self, request, *args, **kwargs):
+        token = request.data.get('token')
+        new_password = request.data.get('new_password')
+
+        if not token or not new_password:
+            return Response({'error': 'Token and new password are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            user_id = decoded_token.get('user_id')
+            user = Customer.objects.get(pk=user_id)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Token has expired'}, status=status.HTTP_400_BAD_REQUEST)
+        except jwt.DecodeError:
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        except Customer.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update password
+        user.set_password(new_password)
+        user.save()
+        return Response({'success': 'Password updated successfully'}, status=status.HTTP_200_OK)

@@ -19,7 +19,8 @@ urlpatterns = [
 
     # path('account-delete/', views.CustomerDeleteView.as_view(), name='account_delete'),
 
-    # path('password-reset/', views.CustomerPasswordResetView.as_view(), name='password_reset'),
-    # path('forget-password/', views.CustomerPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('password-reset/', views.CustomerPasswordResetView.as_view(), name='password_reset'),
+    path('password-update/', views.CustomerPasswordUpdateView.as_view(), name='password_reset'),
+
     # path('confirm-email/', views.CustomerEmailVerificationView.as_view(), name='email_verification'),
 ]
