@@ -320,6 +320,7 @@ SESSION_COOKIE_SECURE = True
 
 
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND")
+
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS")
 
 # EMAIL_HOST = os.environ.get("EMAIL_HOST")
