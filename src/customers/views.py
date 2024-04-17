@@ -100,35 +100,18 @@ class CustomerProfileViewSet(viewsets.ModelViewSet):
         full_name = request.data.get("full_name", None)
         phone_number = request.data.get("phone_number", None)
 
-        if full_name:
-            object_ = self.get_object()
-            object_.customer.full_name = full_name
-            object_.customer.save()
-            return Response(serializers.CustomerProfileSerializer(object_).data)
-        if phone_number:
-            object_ = self.get_object()
-            object_.customer.phone_number = phone_number
-            object_.customer.save()
-            return Response(serializers.CustomerProfileSerializer(object_).data)
-
-        if bio:
-            customer = self.get_object()
-            customer.bio = bio
-            customer.save()
-            return Response(
-                serializers.CustomerProfileSerializer(customer).data,
-                status=status.HTTP_200_OK
-                
-            )
-        if image:
-            customer = self.get_object()
-            customer.image = image
-            customer.save()
-            return Response(
-                serializers.CustomerProfileSerializer(customer).data,
-                status=status.HTTP_200_OK
-            )
-
+        if bio or image or full_name or phone_number:
+            instance = self.get_object()
+            if bio:
+                instance.bio = bio
+            if image:
+                instance.image = image
+            if full_name:
+                instance.full_name = full_name
+            if phone_number:
+                instance.phone_number = phone_number
+            instance.save()
+            return Response(serializers.CustomerProfileSerializer(instance).data)
         else:
             return super().partial_update(request, *args, **kwargs)
 
