@@ -27,7 +27,7 @@ class WishListViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         return Wishlist.objects.filter(customer=self.request.user.customer)
-        
+    
 
     def create(self, request, *args, **kwargs):
         

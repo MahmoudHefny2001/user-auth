@@ -6,9 +6,9 @@ class WishListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wishlist
         # fields = "__all__"
-        exclude = ['customer', 'modified',]
+        exclude = ['customer', 'modified', 'created']
         depth = 1
-        read_only_fields = ['product', 'category']
+        read_only_fields = ['product', 'category',]
 
 
     def to_representation(self, instance):
