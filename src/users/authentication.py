@@ -5,7 +5,6 @@ from django.db.models import Q
 from .models import User
 
 
-
 class CustomUserAuthenticationBackend(ModelBackend):
     """
     This is a custom authentication backend for the Person model.

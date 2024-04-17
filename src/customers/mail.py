@@ -10,7 +10,6 @@ configuration.api_key['api-key'] = settings.SENDINBLUE_API_KEY
 
 api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
 
-
 def send_reset_email(email, token):
     subject = 'Password Reset'
     
@@ -38,3 +37,4 @@ def send_reset_email(email, token):
         print(api_response)
     except ApiException as e:
         print("Exception when calling SMTPApi->send_transac_email: %s\n" % e)
+    

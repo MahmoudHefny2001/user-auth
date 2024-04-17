@@ -24,6 +24,8 @@ from datetime import timedelta
 
 INSTALLED_APPS = [
 
+    'adrf', # for asynronous views support for drf
+
     "whitenoise.runserver_nostatic", # for serving static files
 
     'jazzmin', # 

@@ -163,12 +163,17 @@ class CustomerTokenRefreshView(TokenRefreshView):
         return Response({'error': 'Invalid token'}, status=400)
     
 
+
+from django.views.decorators.cache import never_cache
+
+from asgiref.sync import sync_to_async
+
 class CustomerPasswordResetView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication,]
 
-    async def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         email = request.data.get('email')   
         if not email:
             return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -181,8 +186,9 @@ class CustomerPasswordResetView(APIView):
         # Generate JWT token
         token = jwt.encode({'user_id': customer.pk}, settings.SECRET_KEY, algorithm='HS256')
         
-        # Send token to user's email
-        await send_reset_email(customer.email, token)
+        # Send the email without blocking the request using a new thread
+        import threading
+        threading.Thread(target=send_reset_email, args=(email, token)).start()
         
         return Response({'success': 'Password reset token sent'}, status=status.HTTP_200_OK)
         
