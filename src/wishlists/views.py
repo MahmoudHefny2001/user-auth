@@ -30,9 +30,17 @@ class WishListViewSet(viewsets.ModelViewSet):
     
 
     def create(self, request, *args, **kwargs):
-        
-        product = Product.objects.get(id=request.data.get('product_id'))
-        customer = Customer.objects.get(id=request.user.customer.id)
+        try:
+            product = Product.objects.get(id=request.data.get('product_id'))
+            customer = Customer.objects.get(id=request.user.customer.id)
+
+        except Product.DoesNotExist:
+            return Response(
+                {
+                    "message": "Product not found.",
+                },
+                status=400
+            )
 
         # Check if the user adding the product to the wishlist didn't add it before
         if Wishlist.objects.filter(customer=customer, product=product).exists():
@@ -70,9 +78,17 @@ class WishListViewSet(viewsets.ModelViewSet):
         Also we can delete from wishlist by sending the wishlist object id itself but here we go along with the product id.
         """
 
-
-        product = Product.objects.get(id=request.data.get('product_id'))
-        customer = Customer.objects.get(id=request.user.customer.id)
+        try:
+            product = Product.objects.get(id=request.data.get('product_id'))
+            customer = Customer.objects.get(id=request.user.customer.id)
+        
+        except Product.DoesNotExist:
+            return Response(
+                {
+                    "message": "Product not found.",
+                },
+                status=400
+            )
 
         if not Wishlist.objects.filter(customer=customer, product=product).exists():
             return Response(
@@ -100,3 +116,4 @@ class WishListViewSet(viewsets.ModelViewSet):
                 },
                 status=400
             )
+        
