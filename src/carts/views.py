@@ -29,9 +29,17 @@ class CartViewSet(viewsets.ModelViewSet):
         return Cart.objects.filter(customer=self.request.user.customer)
         
     def create(self, request, *args, **kwargs):
-        
-        product = Product.objects.get(id=request.data.get('product_id'))
-        customer = Customer.objects.get(id=request.user.customer.id)
+        try:
+            product = Product.objects.get(id=request.data.get('product_id'))
+            customer = Customer.objects.get(id=request.user.customer.id)
+
+        except Product.DoesNotExist:
+            return Response(
+                {
+                    "message": "Product not found.",
+                },
+                status=400
+            )
 
         # Check if the user adding the product to the cart didn't add it before
         if Cart.objects.filter(customer=customer, product=product).exists():
@@ -69,8 +77,18 @@ class CartViewSet(viewsets.ModelViewSet):
         Also we can delete from cart by sending the cart object id itself but here we go along with the product id.
         """
 
-        product = Product.objects.get(id=request.data.get('product_id'))
-        customer = Customer.objects.get(id=request.user.customer.id)
+        try:
+
+            product = Product.objects.get(id=request.data.get('product_id'))
+            customer = Customer.objects.get(id=request.user.customer.id)
+        
+        except Product.DoesNotExist:
+            return Response(
+                {
+                    "message": "Product not found.",
+                },
+                status=400
+            )
 
         if not Cart.objects.filter(customer=customer, product=product).exists():
             return Response(
