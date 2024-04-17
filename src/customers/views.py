@@ -24,7 +24,7 @@ import jwt
 
 from django.conf import settings
 
-from .mail import send_reset_email
+from .mail import send_reset_password_email
 
 
 class CustomerSignupView(APIView):
@@ -110,17 +110,22 @@ class CustomerProfileViewSet(viewsets.ModelViewSet):
         image = request.data.get("image", None)
         full_name = request.data.get("full_name", None)
         phone_number = request.data.get("phone_number", None)
+        email = request.data.get("email", None)
 
-        if bio or image or full_name or phone_number:
+        if bio or image or full_name or phone_number or email:
             instance = self.get_object()
+            customer = instance.customer
             if bio:
                 instance.bio = bio
             if image:
                 instance.image = image
             if full_name:
-                instance.full_name = full_name
+                instance.customer.full_name = full_name
+            if email:
+                instance.customer.email = email
             if phone_number:
-                instance.phone_number = phone_number
+                instance.customer.phone_number = phone_number
+            instance.customer.save()
             instance.save()
             return Response(serializers.CustomerProfileSerializer(instance).data)
         else:
@@ -164,9 +169,7 @@ class CustomerTokenRefreshView(TokenRefreshView):
     
 
 
-from django.views.decorators.cache import never_cache
-
-from asgiref.sync import sync_to_async
+import threading
 
 class CustomerPasswordResetView(APIView):
 
@@ -186,9 +189,8 @@ class CustomerPasswordResetView(APIView):
         # Generate JWT token
         token = jwt.encode({'user_id': customer.pk}, settings.SECRET_KEY, algorithm='HS256')
         
-        # Send the email without blocking the request using a new thread
-        import threading
-        threading.Thread(target=send_reset_email, args=(email, token)).start()
+        # Send the email without blocking the response using a new thread
+        threading.Thread(target=send_reset_password_email, args=(email, token)).start()
         
         return Response({'success': 'Password reset token sent'}, status=status.HTTP_200_OK)
         
