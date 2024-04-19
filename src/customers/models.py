@@ -47,7 +47,7 @@ class CustomerProfile(models.Model):
     
     birth_date = models.DateField(blank=True, null=True)
 
-    image = models.ImageField(upload_to='images/customers/profiles/', blank=True, null=True, default='images/customers/profiles/blanck.jpg')
+    image = models.ImageField(upload_to='images/customers/profiles/', blank=True, null=True, default='images/customers/profiles/blank_p71odd.jpg')
 
     bio = models.TextField(blank=True, null=True)
 
