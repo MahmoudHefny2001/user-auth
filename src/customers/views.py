@@ -95,6 +95,8 @@ class CustomerProfileViewSet(viewsets.ModelViewSet):
     throttle_classes = [UserRateThrottle, AnonRateThrottle]
     authentication_classes = [JWTAuthentication,]
 
+    http_method_names = ['get', 'post', 'patch', 'delete']
+
     def get_queryset(self):
         if self.request.user.is_superuser:
             return CustomerProfile.objects.all()
@@ -173,8 +175,9 @@ import threading
 
 class CustomerPasswordResetView(APIView):
 
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [JWTAuthentication,]
+    permission_classes = [permissions.AllowAny,]
+    # permission_classes = [permissions.IsAuthenticated]
+    # authentication_classes = [JWTAuthentication,]
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')   
@@ -196,10 +199,11 @@ class CustomerPasswordResetView(APIView):
         
 
 
-class CustomerPasswordUpdateView(APIView):
+class CustomerPasswordUpdateMailView(APIView):
 
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [JWTAuthentication,]
+    permission_classes = [permissions.AllowAny,]
+    # permission_classes = [permissions.IsAuthenticated]
+    # authentication_classes = [JWTAuthentication,]
 
     def post(self, request, *args, **kwargs):
         token = request.data.get('token')
@@ -223,3 +227,64 @@ class CustomerPasswordUpdateView(APIView):
         user.set_password(new_password)
         user.save()
         return Response({'success': 'Password updated successfully'}, status=status.HTTP_200_OK)
+
+
+
+
+class CustomerPasswordUpdateView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication,]
+
+    def post(self, request, *args, **kwargs):
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        if not old_password or not new_password:
+            return Response({'error': 'Old password and new password are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+
+        if not user.check_password(old_password):
+            return Response({'error': 'Old password is incorrect'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({'success': 'Password updated successfully'}, status=status.HTTP_200_OK)
+    
+
+
+class CustomerDeleteView(APIView):
+    
+        permission_classes = [permissions.IsAuthenticated]
+        authentication_classes = [JWTAuthentication,]
+    
+        def delete(self, request, *args, **kwargs):
+            user = request.user
+            user.delete()
+            return Response({'success': 'Account deleted successfully'}, status=status.HTTP_200_OK)
+
+
+
+# class CustomerEmailVerificationView(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
+#     authentication_classes = [JWTAuthentication,]
+
+#     def post(self, request, *args, **kwargs):
+#         try:
+#             customer = Customer.objects.get(pk=request.user.pk)
+#             profile = CustomerProfile.objects.get(customer=customer)
+#             if profile.is_verified:
+#                 return Response({'error': 'Email is already verified'}, status=400)
+            
+#             profile.is_verified = True
+#             profile.save()
+
+#             return Response({'success': 'Email verified successfully'}, status=200)
+#         except Customer.DoesNotExist:
+#             return Response({'error': 'User not found'}, status=404)
+
+#         except Exception as e:
+#             return Response({'error': str(e)}, status=400)
+        
