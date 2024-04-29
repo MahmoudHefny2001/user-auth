@@ -134,8 +134,9 @@ class ProductAttachment(TimeStampedModel):
 
 
 class ProductColor(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="colors")
-    color = models.CharField(max_length=255)
+    # id bigint
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="colors", null=False, blank=False,) # bigint
+    color = models.CharField(max_length=255, null=False, blank=False,)
     
     def __str__(self):
         return f"{self.product} - {self.color}"

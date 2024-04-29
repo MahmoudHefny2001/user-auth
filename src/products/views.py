@@ -181,7 +181,6 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
                 price=request.data.get('price'),
                 quantity=request.data.get('quantity'),
                 category_id=request.data.get('category_id', None),
-                colors=request.data.get('colors', None),
                 on_sale=request.data.get('on_sale', None),
                 sale_percent=request.data.get('sale_percent', None),
                 image=request.data.get('image',),
@@ -189,6 +188,16 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
                 attachments = request.FILES.getlist('attachments', None)
             )
 
+            colors=request.data.get('colors', None),
+            if colors is not None:
+                from .models import ProductColor
+                for color in colors:
+                    product_color = ProductColor.objects.create(
+                        product=product,
+                        color=color
+                    )
+                    product_color.save()
+            
 
             # Handle product attachmetns creation like adding multiple images
                 
