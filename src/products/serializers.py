@@ -32,10 +32,17 @@ class GetProductsSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['category'] = {
-            "id": instance.category.id,
-            "name": instance.category.name
-        }
+
+        if representation['category']:
+
+            representation['category'] = {
+                "id": instance.category.id,
+                "name": instance.category.name
+            }
+
+        else:
+            del representation['category']
+        
 
         representation['average_rating'] = instance.average_rating
         if instance.sale_percent:
@@ -47,10 +54,17 @@ class GetProductsSerializer(serializers.ModelSerializer):
 
 
         if not instance.image or instance.image == 'null':
-            representation['image'] = '../utils/black.jpg'
+            representation['image'] = None
             # representation['image'] = None
 
         
+        if not instance.colors:
+            del representation['colors']
+        
+        else:
+            representation['colors'] = instance.get_colors()
+
+
         if not instance.on_sale or instance.on_sale == 'null':
             representation['on_sale'] = False
         
@@ -90,19 +104,23 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
 
-        product_attachments = []
-# 
-        for attachment in ProductAttachment.objects.filter(product=instance):
-            product_attachments.append(attachment.get_attachment_url())
 
         representation = super().to_representation(instance)
-        representation['category'] = {
-            "id": instance.category.id,
-            "name": instance.category.name
-        }
+
+        if representation['category']:
+            representation['category'] = {
+                "id": instance.category.id,
+                "name": instance.category.name
+            }
+
+        else:
+            del representation['category']
 
         if not instance.colors:
             del representation['colors']
+
+        else:
+            representation['colors'] = instance.get_colors()
 
         if not instance.on_sale:
             """
@@ -116,7 +134,7 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
 
         if instance.sale_percent:
             representation['sale_percent'] = str(int(instance.sale_percent)) + '%'
-        representation['images'] = list(product_attachments)
+        representation['images'] = instance.get_attachments()
 
         representation['average_rating'] = instance.average_rating
         representation['reviews'] = instance.get_reviews()
@@ -160,10 +178,23 @@ class GetProductsSerializerForMerchants(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['category'] = {
-            "id": instance.category.id,
-            "name": instance.category.name
-        }
+        
+        if representation['category']:
+            representation['category'] = {
+                "id": instance.category.id,
+                "name": instance.category.name
+            }
+        
+        else:
+            del representation['category']
+        
+
+        if not instance.colors:
+            del representation['colors']
+        
+        else:
+            representation['colors'] = instance.get_colors()
+
         representation['average_rating'] = instance.average_rating
 
         if instance.sale_percent:
@@ -189,19 +220,26 @@ class RetrieveProductsSerializerForMerchants(serializers.ModelSerializer):
 
     def to_representation(self, instance):
 
-        product_attachments = []
-# 
-        for attachment in ProductAttachment.objects.filter(product=instance):
-            product_attachments.append(attachment.get_attachment_url())
-
         representation = super().to_representation(instance)
-        representation['category'] = {
-            "id": instance.category.id,
-            "name": instance.category.name
-        }
+        
+        if representation['category']:
+            representation['category'] = {
+                "id": instance.category.id,
+                "name": instance.category.name
+            }
+        
+        else:
+            del representation['category']
+        
+        if not instance.colors:
+            del representation['colors']
+        
+        else:
+            representation['colors'] = instance.get_colors()
+
         if instance.sale_percent:
             representation['sale_percent'] = str(int(instance.sale_percent)) + '%'
-        representation['images'] = list(product_attachments)
+        representation['images'] = instance.get_attachments()
 
         representation['average_rating'] = instance.average_rating
         representation['reviews'] = instance.get_reviews()
@@ -211,12 +249,34 @@ class RetrieveProductsSerializerForMerchants(serializers.ModelSerializer):
 
     # handle multiple images upload
     def create(self, validated_data):
-        print(validated_data)
         images_data = self.context.get('view').request.FILES
-        print(images_data)
         product = Product.objects.create(**validated_data)
-        for image_data in images_data.values():
-            ProductAttachment.objects.create(product=product, attachment=image_data)
+        if images_data:
+            for image_data in images_data.values():
+                ProductAttachment.objects.create(product=product, attachment=image_data)
         return product
 
 
+
+class ProductAttachmentSerializer(serializers.ModelSerializer):
+
+    """
+    Product Attachment Serializer this is used to serialize the product attachment model
+    """
+
+    class Meta:
+        model = ProductAttachment
+        fields = "__all__"
+
+    
+
+from .models import ProductColor
+class ProductColorSerializer(serializers.ModelSerializer):
+    
+        """
+        Product Color Serializer this is used to serialize the product color model
+        """
+    
+        class Meta:
+            model = ProductColor
+            fields = "__all__"

@@ -58,6 +58,13 @@ class ProductReviewViewSet(viewsets.ModelViewSet):
         product_id = request.data.get("product_id",)
         customer = request.user.customer
 
+        if product_id is None or product_id == '':
+            return Response({
+                "Product ID is required for the review"
+            },
+            status = 400
+            )
+
         if ProductReview.objects.filter(product_id=product_id, customer=customer).exists():
             return Response({"message": "You have already reviewed this product"}, status=400)
         

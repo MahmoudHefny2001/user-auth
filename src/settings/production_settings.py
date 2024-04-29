@@ -30,7 +30,50 @@ CLOUDINARY_STORAGE = {
 INSTALLED_APPS += [
     'cloudinary_storage', # Cloudinary Storage
     'cloudinary',      # Cloudinary
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
+
+
+MIDDLEWARE += [
+    "allauth.account.middleware.AccountMiddleware",
+]
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    'facebook': {
+        'METHOD': 'oauth2',
+        'SCOPE': ['email', 'public_profile'],
+        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+        'INIT_PARAMS': {'cookie': True},
+        'FIELDS': [
+            'id',
+            'email',
+            'name',
+            'first_name',
+            'last_name',
+        ],
+        'EXCHANGE_TOKEN': True,
+        'VERIFIED_EMAIL': False,
+        'VERSION': 'v7.0',
+    },
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+            
+        ],
+        'AUTH_PARAMS': {'access_type': 'online'},
+    }
+}
+
+
+AUTHENTICATION_BACKENDS += [
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 
 MEDIA_URL = '/media/'  # or any prefix you choose
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

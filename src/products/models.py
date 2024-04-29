@@ -36,14 +36,14 @@ class Product(TimeStampedModel):
     quantity = models.IntegerField()
     image = models.ImageField(upload_to="images/products/", null=True, blank=True,)
     
-    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name="products")
+    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name="products", null=True, blank=True, default=None)
 
     available = models.BooleanField(default=True, null=True, blank=True)
     on_sale = models.BooleanField(default=False, null=True, blank=True)
     sale_percent = models.IntegerField(default=0, null=True, blank=True)
     price_after_sale = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
-    colors = ArrayField(base_field=models.CharField(max_length=255), null=True, blank=True)
+    # colors = ArrayField(base_field=models.CharField(max_length=255), null=True, blank=True)
 
 
     average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0, null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
@@ -61,16 +61,25 @@ class Product(TimeStampedModel):
                 {
                     "rating": review.rating,
                     "review": review.review,
-                    "customer": review.customer.full_name,
+                    "customer": {
+                        "full_name": review.customer.full_name,
+                        # "image": review.customer.get_image_url()
+                    }
                 }
             )
         return reviews
 
     
     def get_attachments(self):
-        return ProductAttachment.objects.filter(product=self)
+        from .serializers import ProductAttachmentSerializer
+        return ProductAttachmentSerializer(ProductAttachment.objects.filter(product=self), many=True).data
     
     
+
+    def get_colors(self):
+        from .serializers import ProductColorSerializer
+        return ProductColorSerializer(ProductColor.objects.filter(product=self), many=True).data
+
 
     def save(self, **kwargs):
         if self.on_sale:
@@ -121,3 +130,18 @@ class ProductAttachment(TimeStampedModel):
         verbose_name = "Product Attachment"
         verbose_name_plural = "Product Attachments"
         
+
+
+
+class ProductColor(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="colors")
+    color = models.CharField(max_length=255)
+    
+    def __str__(self):
+        return f"{self.product} - {self.color}"
+    
+    class Meta:
+        db_table = "product_colors"
+        verbose_name = "Product Color"
+        verbose_name_plural = "Product Colors"
+        unique_together = ('product', 'color')

@@ -32,7 +32,6 @@ class Customer(CustomerBridge):
 
     address = models.TextField(blank=True, null=True)
 
-
     class Meta:
         db_table = "customers"
         

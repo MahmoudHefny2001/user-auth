@@ -2,6 +2,9 @@ from django.urls import path, include
 from . import views
 
 
+
+from . import views
+
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -26,4 +29,9 @@ urlpatterns = [
     path('password-update-mail/', views.CustomerPasswordUpdateMailView.as_view(), name='password_reset'),
 
     # path('confirm-email/', views.CustomerEmailVerificationView.as_view(), name='email_verification'),
+
+    # path('google-login/', views.GoogleSocialLoginView.as_view()),
+    # path('google-signup/', views.GoogleSocialSignupView.as_view()),
+
+
 ]

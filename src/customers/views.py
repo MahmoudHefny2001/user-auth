@@ -267,6 +267,42 @@ class CustomerDeleteView(APIView):
 
 
 
+# from rest_framework import generics
+# from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2LoginView
+# from allauth.socialaccount.app_settings import QUERY_PARAMETER_CONNECT_OR_LOGIN
+# from allauth.socialaccount.models import SocialAccount, SocialToken
+
+
+# class CustomOAuth2Adapter(OAuth2Adapter):
+#     provider_id = 'google'  # or 'facebook'
+
+#     def get_provider_url(self, request):
+#         return f'/{self.provider_id}/login/'
+
+# class CustomOAuth2LoginView(OAuth2LoginView):
+#     adapter_class = CustomOAuth2Adapter
+
+# class GoogleSocialLoginView(generics.CreateAPIView):
+#     serializer_class = serializers.CustomerSerializer
+
+#     def create(self, request, *args, **kwargs):
+#         next_url = request.query_params.get('next', '/')
+#         login_url = f'/{self.request.auth.provider}/login/?{QUERY_PARAMETER_CONNECT_OR_LOGIN}=1&next={next_url}'
+#         return Response({'login_url': login_url})
+
+# class GoogleSocialSignupView(generics.CreateAPIView):
+#     serializer_class = serializers.CustomerSerializer
+
+#     def create(self, request, *args, **kwargs):
+#         adapter = CustomOAuth2Adapter()
+#         request.user.social_account.set_provider(adapter.get_provider())
+#         request.user.social_account.extra_data['access_token'] = request.data['access_token']
+#         request.user.social_account.extra_data['token_type'] = request.data['token_type']
+#         token = SocialToken(app=adapter.get_provider(), token=request.data['access_token'], token_type=request.data['token_type'])
+#         token.save()
+
+
+
 # class CustomerEmailVerificationView(APIView):
 #     permission_classes = [permissions.IsAuthenticated]
 #     authentication_classes = [JWTAuthentication,]

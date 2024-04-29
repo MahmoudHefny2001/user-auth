@@ -13,7 +13,7 @@ urlpatterns = [
     path("signup/", views.MerchantSignupView.as_view(), name="signup"),
     path("login/", views.MerchantLoginView.as_view(), name="login"),
  
-    # path("logout/", views.MerchantLogOutView.as_view(), name="logout"),
+    path("logout/", views.MerchantLogOutView.as_view(), name="logout"),
  
     # path('token/refresh/', views.MerchantTokenRefreshView.as_view(), name='token_refresh'),
 
