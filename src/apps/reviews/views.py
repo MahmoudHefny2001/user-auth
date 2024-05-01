@@ -40,6 +40,10 @@ class ProductReviewViewSet(viewsets.ModelViewSet):
                 
             return ProductReview.objects.filter(customer=self.request.user.customer)
 
+        # handle the case where the customer is anonymous
+        if not self.request.user.is_authenticated:
+            return ProductReview.objects.none()
+        
         return ProductReview.objects.filter(customer=self.request.user.customer)
 
     
