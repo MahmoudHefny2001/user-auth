@@ -22,7 +22,7 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
         customer = None
         try:
             customer = self.request.user.customer
-        except customer.DoesNotExist:
+        except AttributeError:
             return self.queryset.none()
             
         if customer:
