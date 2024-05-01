@@ -26,7 +26,14 @@ class WishListViewSet(viewsets.ModelViewSet):
     http_method_names   = ['get','delete', 'post',]
     
     def get_queryset(self):
-        return Wishlist.objects.filter(customer=self.request.user.customer)
+        customer = None
+        try:
+            customer = self.request.user.customer
+        except AttributeError:
+            return self.queryset.none()
+            
+        if customer:
+            return self.queryset.filter(customer=customer)
     
 
     def create(self, request, *args, **kwargs):
