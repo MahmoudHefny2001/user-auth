@@ -51,7 +51,7 @@ class Product(TimeStampedModel):
 
 
     def get_reviews(self):
-        from reviews.models import ProductReview
+        from apps.reviews.models import ProductReview
         # return json serializable reviews
         reviews = []
         for review in ProductReview.objects.filter(product=self):
