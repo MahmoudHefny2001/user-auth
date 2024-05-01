@@ -10,13 +10,13 @@ from datetime import timedelta
 # 
 # load_dotenv(".env.base")
 
-# SECRET_KEY = os.environ.get("SECRET_KEY", None)
+SECRET_KEY = os.environ.get("SECRET_KEY", None)
 
-# DEBUG = os.environ.get("DEBUG", True)
+DEBUG = os.environ.get("DEBUG", True)
 
-# ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
+ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 
-# HOST_URL = os.environ.get("HOST_URL")
+HOST_URL = os.environ.get("HOST_URL")
 
 
 

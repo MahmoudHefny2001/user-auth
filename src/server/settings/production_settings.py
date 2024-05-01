@@ -4,7 +4,7 @@ from .base_settings import *
 from dotenv import load_dotenv
 
 
-load_dotenv("environments/.env.production")
+# load_dotenv("environments/.env.production")
 
 
 SECRET_KEY = os.environ.get("shared.SECRET_KEY", None)
