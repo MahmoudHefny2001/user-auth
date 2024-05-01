@@ -268,7 +268,8 @@ class ProductAttachmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductAttachment
-        fields = "__all__"
+        # fields = "__all__"
+        exclude = ('created', 'modified', 'product',)
 
     
 
