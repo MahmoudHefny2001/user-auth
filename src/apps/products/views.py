@@ -70,14 +70,18 @@ class HomeViewSet(views.APIView):
                 "description": product.description,
                 "price": float(product.price),
                 "on_sale": product.on_sale,
-                "colors": product.colors,
                 "sale_percent": str(int(product.sale_percent)) + "%",
                 "price_after_sale": product.price_after_sale ,
                 "main_image": product.get_image_url(),
                 "average_rating": product.average_rating,
             }
             products.append(product_data)
-    
+
+            # add colors to the product data
+            for product in products:
+                from .models import ProductColor
+                from .serializers import ProductColorSerializer
+                product['colors'] = ProductColorSerializer(ProductColor.objects.filter(product=product['id']), many=True).data
 
         # select only name from the category
         categories = Category.objects.all().values('name')[:5]
