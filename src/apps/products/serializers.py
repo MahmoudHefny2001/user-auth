@@ -28,7 +28,7 @@ class GetProductsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         # fields = "__all__"
-        exclude = ['created', 'modified', 'quantity', 'merchant', 'colors', 'bar_code']
+        exclude = ['created', 'modified', 'quantity', 'merchant', 'bar_code']
         depth = 1
 
     def to_representation(self, instance):
