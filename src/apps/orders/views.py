@@ -19,9 +19,14 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
     search_fields = ['status', 'order_id', 'order_name', 'extra_notes', 'shipping_address',]
 
     def get_queryset(self):
-        customer = self.request.user.customer
+        try:
+            customer = self.request.user.customer
+        except customer.DoesNotExist:
+            customer = None
+
         if customer:
             return self.queryset.filter(customer=customer)
+        
         return self.queryset.none()
     
     def create(self, request, *args, **kwargs):
