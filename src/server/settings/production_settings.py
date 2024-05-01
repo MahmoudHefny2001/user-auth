@@ -7,23 +7,33 @@ from dotenv import load_dotenv
 load_dotenv("environments/.env.production")
 
 
-SECRET_KEY = os.environ.get("SECRET_KEY", None)
+SECRET_KEY = os.environ.get("shared.SECRET_KEY", None)
+# SECRET_KEY = os.environ.get("SECRET_KEY", None)
 
 DEBUG = False
 
-ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
+ALLOWED_HOSTS = list(str(os.environ.get("shared.ALLOWED_HOSTS")).split(", "))
+# ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 
-HOST_URL = os.environ.get("HOST_URL")
+# HOST_URL = os.environ.get("HOST_URL")
+HOST_URL = os.environ.get("shared.HOST_URL")
+
 
 
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
+# CLOUDINARY_STORAGE = {
+#   	'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
+#   	'API_KEY': os.environ.get("API_KEY"),
+#   	'API_SECRET': os.environ.get("API_SECRET")
+# }
+
 CLOUDINARY_STORAGE = {
-  	'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
-  	'API_KEY': os.environ.get("API_KEY"),
-  	'API_SECRET': os.environ.get("API_SECRET")
+  	'CLOUD_NAME': os.environ.get("shared.CLOUD_NAME"),
+  	'API_KEY': os.environ.get("shared.API_KEY"),
+  	'API_SECRET': os.environ.get("shared.API_SECRET")
 }
 
 
@@ -111,12 +121,20 @@ DATABASES = {
     
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "DATABASE_URL": str(os.environ.get("DATABASE_URL")),
-        "NAME": str(os.environ.get("DATABASE_NAME")),
-        "USER": str(os.environ.get("DATABASE_USER")),
-        "PASSWORD": str(os.environ.get("DATABASE_PASSWORD")),
-        "HOST": str(os.environ.get("DATABASE_HOST")),
-        "PORT": int(os.environ.get("DATABASE_PORT")),
+        # "DATABASE_URL": str(os.environ.get("DATABASE_URL")),
+        # "NAME": str(os.environ.get("DATABASE_NAME")),
+        # "USER": str(os.environ.get("DATABASE_USER")),
+        # "PASSWORD": str(os.environ.get("DATABASE_PASSWORD")),
+        # "HOST": str(os.environ.get("DATABASE_HOST")),
+        # "PORT": int(os.environ.get("DATABASE_PORT")),
+
+        "DATABASE_URL": str(os.environ.get("shared.DATABASE_URL")),
+        "NAME": str(os.environ.get("shared.DATABASE_NAME")),
+        "USER": str(os.environ.get("shared.DATABASE_USER")),
+        "PASSWORD": str(os.environ.get("shared.DATABASE_PASSWORD")),
+        "HOST": str(os.environ.get("shared.DATABASE_HOST")),
+        "PORT": int(os.environ.get("shared.DATABASE_PORT")),
+
         # 'TEST': {
         #     'NAME': '',
         # },
