@@ -22,5 +22,5 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['order_items'] = OrderItemSerializer(instance.order_items.all(), many=True).data
+        representation['order']['order_items'] = instance.get_order_items()
         return representation

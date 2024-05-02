@@ -45,6 +45,25 @@ class Order(TimeStampedModel):
 
     extra_notes = models.TextField(null=True, blank=True)
 
+
+    def get_order_items(self):
+        order_items = []
+
+        for order_item in OrderItem.objects.filter(order=self):
+            order_items.append(
+                {
+                    "product": {
+                        "name": order_item.product.name,
+                        "price": order_item.product.price,
+                        "image": order_item.product.image
+                    },
+                    "quantity": order_item.quantity,
+                    "sub_total_price": order_item.sub_total_price
+                }
+            )
+
+        return order_items
+
     class Meta:
         db_table = "orders"
         verbose_name = "Order"
