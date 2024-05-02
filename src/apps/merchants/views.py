@@ -19,6 +19,9 @@ from apps.users.customJWT import CustomJWTAuthenticationClass
 from apps.users.authentication import CustomUserAuthenticationBackend
 
 
+import jwt
+from django.conf import settings
+
 
 class MerchantSignupView(APIView):
     """
@@ -100,69 +103,94 @@ class MerchantProfileViewSet(viewsets.ModelViewSet):
 
 
     def partial_update(self, request, *args, **kwargs):
-        
+
+        """
+            partial merchant update
+            allow update only one or more of the fields
+        """
+
         try:
-            merchant = self.get_object()
+            
+            # merchant_data
+            address = request.data.get("address", None)
+            payment_information = request.data.get("payment_information", None)
+            terms_agreement = request.data.get("terms_agreement", None)
+            email = request.data.get("email", None)
+            business_name = request.data.get("business_name", None)
+            phone_number = request.data.get("phone_number", None)
+            
 
-            if "merchant" in request.data:
-                
-                """
-                partial merchant update
-                allow update only one or more of the fields
-                """
+            # merchant_profile_data
+            image = request.data.get("image", None)
+            merchant_zip_code = request.data.get("merchant_zip_code", None)
+            tax_id = request.data.get("tax_id", None)
+            logo = request.data.get("logo", None)
+            shipping_address = request.data.get("shipping_address", None)
+            shipping_options = request.data.get("shipping_options", None)
+            website_url = request.data.get("website_url", None)
+            facebook_url = request.data.get("facebook_url", None)
+            twitter_url = request.data.get("twitter_url", None)
+            instagram_url = request.data.get("instagram_url", None)
+            linkedin_url = request.data.get("linkedin_url", None)
+            about_us = request.data.get("about_us", None)
+            return_policy = request.data.get("return_policy", None)
 
-                if "email" in request.data["merchant"]:
-                    merchant.merchant.email = request.data["merchant"]["email"]
-                    merchant.merchant.save()
-                    return Response(serializers.MerchantProfileSerializer(merchant).data)
-                if "phone_number" in request.data["merchant"]:
-                    merchant.merchant.phone_number = request.data["merchant"]["phone_number"]
-                    merchant.merchant.save()
-                    return Response(serializers.MerchantProfileSerializer(merchant).data)
-                if "address" in request.data["merchant"]:
-                    merchant.merchant.address = request.data["merchant"]["address"]
-                    merchant.merchant.save()
-                    return Response(serializers.MerchantProfileSerializer(merchant).data)
-                if "payment_information" in request.data["merchant"]:
-                    merchant.merchant.payment_information = request.data["merchant"]["payment_information"]
-                    merchant.merchant.save()
-                    return Response(serializers.MerchantProfileSerializer(merchant).data)
-                if "terms_agreement" in request.data["merchant"]:
-                    merchant.merchant.terms_agreement = request.data["merchant"]["terms_agreement"]
-                    merchant.merchant.save()
-                    return Response(serializers.MerchantProfileSerializer(merchant).data)
-                if "business_name" in request.data["merchant"]:
-                    merchant.merchant.full_name = request.data["merchant"]["business_name"]
-                    merchant.merchant.save()
-                    return Response(serializers.MerchantProfileSerializer(merchant).data)
-            if "about_us" in request.data:
-                merchant.about_us = request.data["about_us"]
-                merchant.save()
-                return Response(serializers.MerchantProfileSerializer(merchant).data)
+            
+            merchant_profile = self.get_object()
+            
+            # update merchant data
+            if address:
+                merchant_profile.merchant.address = address
+            if payment_information:
+                merchant_profile.merchant.payment_information = payment_information
+            if terms_agreement:
+                merchant_profile.merchant.terms_agreement = terms_agreement
+            if email:
+                merchant_profile.merchant.email = email
+            if business_name:
+                merchant_profile.merchant.full_name = business_name
+            if phone_number:
+                merchant_profile.merchant.phone_number = phone_number
+            
+            merchant_profile.merchant.save()
 
-            if "website_url" in request.data:
-                merchant.website_url = request.data["website_url"]
-                merchant.save()
-                return Response(serializers.MerchantProfileSerializer(merchant).data)
+            # update merchant profile data
+            if image:
+                merchant_profile.image = image
+            if merchant_zip_code:
+                merchant_profile.merchant_zip_code = merchant_zip_code
+            if tax_id:
+                merchant_profile.tax_id = tax_id
+            if logo:
+                merchant_profile.logo = logo
+            if shipping_address:
+                merchant_profile.shipping_address = shipping_address
+            if shipping_options:
+                merchant_profile.shipping_options = shipping_options
+            if website_url:
+                merchant_profile.website_url = website_url
+            if facebook_url:
+                merchant_profile.facebook_url = facebook_url
+            if twitter_url:
+                merchant_profile.twitter_url = twitter_url
+            if instagram_url:
+                merchant_profile.instagram_url = instagram_url
+            if linkedin_url:
+                merchant_profile.linkedin_url = linkedin_url
+            if about_us:
+                merchant_profile.about_us = about_us
+            if return_policy:
+                merchant_profile.return_policy = return_policy
             
-            if "facebook_url" in request.data:
-                merchant.facebook_url = request.data["facebook_url"]
-                merchant.save()
-                return Response(serializers.MerchantProfileSerializer(merchant).data)
-            
-            if "linkedin_url" in request.data:
-                merchant.linkedin_url = request.data["linkedin_url"]
-                merchant.save()
-                return Response(serializers.MerchantProfileSerializer(merchant).data)
-            
-            if "instagram_url" in request.data:
-                merchant.instagram_url = request.data["instagram_url"]
-                merchant.save()
-                return Response(serializers.MerchantProfileSerializer(merchant).data)
-            
-            else:
-                return super().partial_update(request, *args, **kwargs)
-            
+            merchant_profile.save()
+
+            return Response(
+                {
+                    'merchant': serializers.MerchantProfileSerializer(merchant_profile).data
+                },
+                status=status.HTTP_200_OK
+            )
+    
 
         except Exception as e:
             return Response({'error': str(e)}, status=400)
@@ -188,6 +216,8 @@ class MerchantLogOutView(APIView):
             return Response({'error': str(e)}, status=400)
 
 
+
+
 class MerchantTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
         try:
@@ -206,3 +236,103 @@ class MerchantTokenRefreshView(TokenRefreshView):
             return Response({'error': str(e)}, status=400)
         return Response({'error': 'Invalid token'}, status=400)
     
+
+
+
+
+import threading
+
+from .mail import send_reset_password_email
+
+class MerchantPasswordResetMailView(APIView):
+
+    permission_classes = [permissions.AllowAny,]
+    # permission_classes = [permissions.IsAuthenticated]
+    # authentication_classes = [JWTAuthentication,]
+
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')   
+        if not email:
+            return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            merchant = Merchant.objects.get(email=email)
+        except Merchant.DoesNotExist:
+            return Response({'error': 'User not found with this email'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Generate JWT token
+        token = jwt.encode({'user_id': merchant.pk}, settings.SECRET_KEY, algorithm='HS256')
+        
+        # Send the email without blocking the response using a new thread
+        threading.Thread(target=send_reset_password_email, args=(email, token)).start()
+        
+        return Response({'success': 'Password reset token sent'}, status=status.HTTP_200_OK)
+        
+
+
+class MerchantPasswordUpdateMailView(APIView):
+
+    permission_classes = [permissions.AllowAny,]
+    # permission_classes = [permissions.IsAuthenticated]
+    # authentication_classes = [JWTAuthentication,]
+
+    def post(self, request, *args, **kwargs):
+        token = request.data.get('token')
+        new_password = request.data.get('new_password')
+
+        if not token or not new_password:
+            return Response({'error': 'Token and new password are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            user_id = decoded_token.get('user_id')
+            user = Merchant.objects.get(pk=user_id)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Token has expired'}, status=status.HTTP_400_BAD_REQUEST)
+        except jwt.DecodeError:
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        except Merchant.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update password
+        user.set_password(new_password)
+        user.save()
+        return Response({'success': 'Password updated successfully'}, status=status.HTTP_200_OK)
+
+
+
+
+class MerchantPasswordUpdateView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication,]
+
+    def post(self, request, *args, **kwargs):
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        if not old_password or not new_password:
+            return Response({'error': 'Old password and new password are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+
+        if not user.check_password(old_password):
+            return Response({'error': 'Old password is incorrect'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({'success': 'Password updated successfully'}, status=status.HTTP_200_OK)
+    
+
+
+class MerchantDeleteView(APIView):
+    
+        permission_classes = [permissions.IsAuthenticated]
+        authentication_classes = [JWTAuthentication,]
+    
+        def delete(self, request, *args, **kwargs):
+            user = request.user
+            user.delete()
+            return Response({'success': 'Account deleted successfully'}, status=status.HTTP_200_OK)
+        

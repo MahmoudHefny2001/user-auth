@@ -34,7 +34,7 @@ class Product(TimeStampedModel):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField()
-    image = models.ImageField(upload_to="images/products/", null=True, blank=True, default=None)
+    image = models.ImageField(upload_to="images/products/", null=True, blank=True, default=None, max_length=400)
     
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name="products", null=True, blank=True, default=None)
 

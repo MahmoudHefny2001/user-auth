@@ -113,10 +113,13 @@ class CustomerProfileViewSet(viewsets.ModelViewSet):
         full_name = request.data.get("full_name", None)
         phone_number = request.data.get("phone_number", None)
         email = request.data.get("email", None)
+        address = request.data.get("address", None)
 
-        if bio or image or full_name or phone_number or email:
+        if bio or image or full_name or phone_number or email or address:
             instance = self.get_object()
             customer = instance.customer
+            if address:
+                customer.address = address
             if bio:
                 instance.bio = bio
             if image:
