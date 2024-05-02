@@ -14,23 +14,23 @@ DEBUG = False
 
 ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 
-HOST_URL = os.environ.get("shared.HOST_URL")
+HOST_URL = os.environ.get("HOST_URL")
 
 
 
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
+# import cloudinary
+# import cloudinary.uploader
+# import cloudinary.api
 
-CLOUDINARY_STORAGE = {
-  	'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
-  	'API_KEY': os.environ.get("API_KEY"),
-  	'API_SECRET': os.environ.get("API_SECRET")
-}
+# CLOUDINARY_STORAGE = {
+#   	'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
+#   	'API_KEY': os.environ.get("API_KEY"),
+#   	'API_SECRET': os.environ.get("API_SECRET")
+# }
 
 INSTALLED_APPS += [
-    'cloudinary_storage', # Cloudinary Storage
-    'cloudinary',      # Cloudinary
+    # 'cloudinary_storage', # Cloudinary Storage
+    # 'cloudinary',      # Cloudinary
 
     'allauth',
     'allauth.account',
@@ -75,9 +75,10 @@ AUTHENTICATION_BACKENDS += [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 MEDIA_URL = '/media/'  # or any prefix you choose
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # RAILWAY_VOLUME_NAME = str(os.environ.get("RAILWAY_VOLUME_NAME"))
