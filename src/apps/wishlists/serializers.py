@@ -20,8 +20,12 @@ class WishListSerializer(serializers.ModelSerializer):
             "description": instance.product.description,
             "price": float(instance.product.price),
             "on_sale": instance.product.on_sale,
-            "image": instance.product.image,
         }
+
+        try:
+            representation['product']['image'] = instance.product.image.url
+        except Exception as e:
+            representation['product']['image'] = None
             
         if instance.product.on_sale:
             """
@@ -64,3 +68,4 @@ class WishListSerializer(serializers.ModelSerializer):
             representation['product']['colors'] = []
 
         return representation
+    
