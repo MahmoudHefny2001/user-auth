@@ -9,7 +9,7 @@ load_dotenv("environments/.env.production")
 
 SECRET_KEY = os.environ.get("SECRET_KEY", None)
 
-DEBUG = True
+DEBUG = False
 
 
 ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
@@ -78,7 +78,12 @@ AUTHENTICATION_BACKENDS += [
 # DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 MEDIA_URL = '/media/'  # or any prefix you choose
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+RAILWAY_VOLUME_NAME = str(os.environ.get("RAILWAY_VOLUME_NAME"))
+RAILWAY_VOLUME_MOUNT_PATH = str(os.environ.get("RAILWAY_VOLUME_MOUNT_PATH"))
+MEDIA_ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), RAILWAY_VOLUME_MOUNT_PATH)
 
 
 # RAILWAY_VOLUME_NAME = str(os.environ.get("RAILWAY_VOLUME_NAME"))
