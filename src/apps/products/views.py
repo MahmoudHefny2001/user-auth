@@ -179,18 +179,22 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
 
 
         try:
-            product = Product.objects.create(
-                bar_code=request.data.get('bar_code',),
-                merchant=request.user.merchant,
-                name=request.data.get('name'),
-                description=request.data.get('description'),
-                price=request.data.get('price'),
-                quantity=request.data.get('quantity'),
-                category_id=request.data.get('category_id', None),
-                on_sale=request.data.get('on_sale', None),
-                sale_percent=request.data.get('sale_percent', None),
-                image=request.data.get('image',),
-            )
+            
+            try:
+                product = Product.objects.create(
+                    bar_code=request.data.get('bar_code',),
+                    merchant=request.user.merchant,
+                    name=request.data.get('name'),
+                    description=request.data.get('description'),
+                    price=request.data.get('price'),
+                    quantity=request.data.get('quantity'),
+                    category_id=request.data.get('category_id', None),
+                    on_sale=request.data.get('on_sale', None),
+                    sale_percent=request.data.get('sale_percent', None),
+                    image=request.data.get('image',),
+                )
+            except Exception as e:
+                return Response({"error": str(e)}, status=400)
 
             # colors=request.data.getlist('colors', None),
             # if colors is not None and len(colors) > 0:

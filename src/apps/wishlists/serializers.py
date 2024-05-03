@@ -20,7 +20,7 @@ class WishListSerializer(serializers.ModelSerializer):
             "description": instance.product.description,
             "price": float(instance.product.price),
             "on_sale": instance.product.on_sale,
-            "main_image": instance.product.get_image_url(),
+            "main_image": instance.product.image,
 
         }
 
