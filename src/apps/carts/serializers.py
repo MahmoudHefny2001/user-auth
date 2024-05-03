@@ -20,8 +20,22 @@ class CartSerializer(serializers.ModelSerializer):
             "description": instance.product.description,
             "price": float(instance.product.price),
             "on_sale": instance.product.on_sale,
-            "main_image": instance.product.image,
         }
+
+
+
+        from django.core.exceptions import SuspiciousFileOperation
+        from django.core.files.storage import default_storage
+        
+        try:
+        # Check if the image exists
+            if instance.product.image and default_storage.exists(instance.product.image.name):
+                representation['product']['main_image'] = instance.product.image
+            else:
+                representation['product']['main_image'] = None
+        except (FileNotFoundError, SuspiciousFileOperation, ValueError):
+        # Handle cases where the file is not found, or the operation is suspicious, or other errors
+            representation['product']['main_image'] = None
 
         
         if instance.product.category:
