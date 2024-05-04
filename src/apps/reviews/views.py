@@ -191,19 +191,3 @@ class ProductReviewViewSet(viewsets.ModelViewSet):
 
 
     
-
-class CustomerProductReviewViewSet(viewsets.ModelViewSet):
-    queryset = ProductReview.objects.all()
-    serializer_class = ProductReviewSerializer
-    authentication_classes = [CustomJWTAuthenticationClass, JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
-    
-    filter_backends = [filters.SearchFilter]
-
-    http_method_names = ["get"]
-
-    # search_fields = ["rating", "review", "product__name", "customer__full_name"]
-
-
-    def get_queryset(self):
-        return ProductReview.objects.filter(customer=self.request.user.customer)
