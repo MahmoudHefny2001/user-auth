@@ -14,3 +14,7 @@ class ProductReviewSerializer(serializers.ModelSerializer):
         }
     
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["product"] = instance.product.name
+        
