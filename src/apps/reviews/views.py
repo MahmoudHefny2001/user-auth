@@ -46,6 +46,23 @@ class ProductReviewViewSet(viewsets.ModelViewSet):
         
         return ProductReview.objects.filter(customer=self.request.user.customer)
 
+
+
+    def list(self, request, *args, **kwargs):
+        """
+        Here we are overriding the list method to filter the reviews
+        to only the ones that belong to the customer making the request
+        """
+
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = ProductReviewSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = ProductReviewSerializer(queryset, many=True)
+        return Response(serializer.data)
+
     
     def create(self, request, *args, **kwargs):
         """
