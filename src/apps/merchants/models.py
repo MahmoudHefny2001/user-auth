@@ -34,7 +34,7 @@ class Merchant(MerchantBridge):
 
     payment_information = models.TextField(blank=True, null=True)
 
-    terms_agreement = models.BooleanField(default=False)
+    terms_agreement = models.BooleanField(default=True, null=True, blank=True)
 
 
     def __str__(self):
