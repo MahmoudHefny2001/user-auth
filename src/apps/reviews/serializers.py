@@ -14,6 +14,7 @@ class ProductReviewSerializer(serializers.ModelSerializer):
         }
     
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation["product"] = instance.product.name
+    # def to_representation(self, instance):
+    #     # Overriding the to_representation method to return the product name instead of the product id
+    #     response = super().to_representation(instance)
+    #     response["product"] = instance.product.name
