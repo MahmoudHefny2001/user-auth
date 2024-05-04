@@ -10,6 +10,8 @@ from .serializers import OrderSerializer, OrderItemSerializer
 
 from apps.carts.models import Cart
 
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 
 class OrderViewSetForCustomers(viewsets.ModelViewSet):
     queryset = Order.objects.all()
@@ -160,6 +162,7 @@ class OrderViewSetForMerchants(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = (JWTAuthentication,)
     filter_backends = [filters.SearchFilter]
     search_fields = ['status', 'order_id', 'order_name', 'extra_notes', 'shipping_address',]
 

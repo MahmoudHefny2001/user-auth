@@ -190,4 +190,56 @@ class ProductReviewViewSet(viewsets.ModelViewSet):
         instance.delete()
 
 
+
+
+class ProductReviewViewSetForMerchants(viewsets.ModelViewSet):
+    queryset = ProductReview.objects.all()
+    serializer_class = ProductReviewSerializer
+    authentication_classes = [CustomJWTAuthenticationClass, JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
     
+    filter_backends = [filters.SearchFilter]
+
+    http_method_names = ["get",]
+
+    # search_fields = ["rating", "review", "product__name", "customer__full_name"]
+
+
+    def get_queryset(self):
+        # if the customer trying to get a reivew that it's not his, return 404
+
+        """
+        Here we are overriding the get_queryset method to filter the reviews
+        to only the ones that belong to the customer making the request
+        """
+
+        if self.action == "retrieve":
+            review = ProductReview.objects.get(id=self.kwargs.get("pk"))
+            if review.product.merchant != self.request.user.merchant:
+                raise PermissionDenied(detail="You are not allowed to view this review", code=403)
+                
+            return ProductReview.objects.filter(product__merchant=self.request.user.merchant)
+
+        # handle the case where the customer is anonymous
+        if not self.request.user.is_authenticated:
+            return ProductReview.objects.none()
+        
+        return ProductReview.objects.filter(product__merchant=self.request.user.merchant)
+
+
+
+    def list(self, request, *args, **kwargs):
+        """
+        Here we are overriding the list method to filter the reviews
+        to only the ones that belong to the customer making the request
+        """
+
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = ProductReviewSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = ProductReviewSerializer(queryset, many=True)
+        return Response(serializer.data)
+

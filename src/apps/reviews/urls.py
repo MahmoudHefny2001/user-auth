@@ -8,6 +8,8 @@ router = DefaultRouter()
 
 router.register(r"", views.ProductReviewViewSet, basename="product-review")
 
+router.register(r"for-merchants", views.ProductReviewViewSetForMerchants, basename="product-review-for-merchants")
+
 urlpatterns = [
     path("", include(router.urls)),  
 ]

@@ -53,7 +53,7 @@ class MerchantProfile(models.Model):
     merchant = models.OneToOneField(Merchant, on_delete=models.CASCADE, related_name='profile')
     
 
-    image = models.ImageField(upload_to='merchants/profiles/', blank=True, null=True, default='../utils/black.jpg')
+    image = models.ImageField(upload_to='merchants/profiles/', blank=True, null=True, default=None)
 
     merchant_zip_code = models.CharField(max_length=100, blank=True, null=True)
 
