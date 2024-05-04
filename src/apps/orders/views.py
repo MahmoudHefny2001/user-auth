@@ -166,6 +166,6 @@ class OrderViewSetForMerchants(viewsets.ModelViewSet):
     http_method_names = ['get', 'retrieve',]
 
     def get_queryset(self):
-        return self.queryset.filter(cart__merchant=self.request.user.merchant)
+        return self.queryset.filter(cart__product__merchant=self.request.user.merchant)
     
     
