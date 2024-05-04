@@ -200,7 +200,7 @@ class ProductReviewViewSetForMerchants(viewsets.ModelViewSet):
     
     filter_backends = [filters.SearchFilter]
 
-    http_method_names = ["get",]
+    http_method_names = ["get", ]
 
     # search_fields = ["rating", "review", "product__name", "customer__full_name"]
 
