@@ -72,7 +72,7 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
             )
 
             # Delete the cart after creating the order
-            # cart.delete()
+            
 
             return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
     

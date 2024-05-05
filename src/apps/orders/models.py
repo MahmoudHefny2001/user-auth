@@ -69,6 +69,7 @@ class Order(TimeStampedModel):
         verbose_name = "Order"
         verbose_name_plural = "Orders"
         ordering = ["-created"]
+        # unique_together = ["customer", "cart"]
         
 
 

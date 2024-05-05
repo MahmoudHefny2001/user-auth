@@ -18,7 +18,7 @@ class Cart(TimeStampedModel):
         verbose_name = "Cart"
         verbose_name_plural = "Carts"
         ordering = ["-created"]
-        unique_together = ['customer', 'product']
+        
 
     def __str__(self):
         return f"Cart {self.id}"
