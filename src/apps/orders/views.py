@@ -36,28 +36,57 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
         if not request.user.customer:
             return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
 
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        order = serializer.save(customer=request.user.customer)
 
+        # Check if products in the cart or order in general are available or not and also the quantity required is less than or equal to the quantity available
+        cart = Cart.objects.filter(customer=request.user.customer).first()
+        if not cart:
+            return Response({"error": "Cart is empty"}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+        product = cart.product
+
+        if product.quantity < cart.quantity or product.quantity < 1 or not product.available:
+            return Response({"error": "Product is not available in the required quantity"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+
+        order = Order.objects.filter(cart=cart).first()
+
+        if order:
+            product.quantity -= cart.quantity
+            product.save()
+
+            if product.quantity < 1:
+                product.available = False
+                product.save()
+            
+            cart.delete()
+
+        serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        order = serializer.save()
 
         headers = self.get_success_headers(serializer.data)
 
         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED, headers=headers)
     
+    
+    
 
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
+    # def update(self, request, *args, **kwargs):
+    #     instance = self.get_object()
 
-        if instance.customer != request.user.customer:
-            return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
+    #     if instance.customer != request.user.customer:
+    #         return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
 
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        order = serializer.save()
+    #     serializer = self.get_serializer(instance, data=request.data, partial=True)
+    #     serializer.is_valid(raise_exception=True)
+    #     order = serializer.save()
 
 
-        return Response(OrderSerializer(order).data)
+    #     return Response(OrderSerializer(order).data)
     
 
     def destroy(self, request, *args, **kwargs):
@@ -123,24 +152,24 @@ class OrderItemViewSetForCustomers(viewsets.ModelViewSet):
         return Response(OrderItemSerializer(order_item).data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
+    # def update(self, request, *args, **kwargs):
+    #     instance = self.get_object()
 
-        if instance.order.customer != request.user.customer:
-            return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
+    #     if instance.order.customer != request.user.customer:
+    #         return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
 
 
-        if instance.product.quantity < instance.quantity or instance.product.quantity < 1 or not instance.product.available:
-            return Response({"error": "Product is not available in the required quantity"}, status=status.HTTP_400_BAD_REQUEST)
+    #     if instance.product.quantity < instance.quantity or instance.product.quantity < 1 or not instance.product.available:
+    #         return Response({"error": "Product is not available in the required quantity"}, status=status.HTTP_400_BAD_REQUEST)
         
 
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        order_item = serializer.save()
+    #     serializer = self.get_serializer(instance, data=request.data, partial=True)
+    #     serializer.is_valid(raise_exception=True)
+    #     order_item = serializer.save()
+
+    #     return Response(OrderItemSerializer(order_item).data)
 
 
-
-        return Response(OrderItemSerializer(order_item).data)
     
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
