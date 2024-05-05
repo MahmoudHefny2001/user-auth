@@ -39,7 +39,7 @@ class Order(TimeStampedModel):
     
     cart = models.ForeignKey(Cart, on_delete=models.DO_NOTHING, related_name="orders", null=True, blank=True)
     
-    shipping_address = models.TextField(null=True, blank=True)
+    shipping_address = models.TextField(null=True, blank=True,)
 
     payment_method = models.CharField(max_length=100, choices=PaymentMethod.choices, default=PaymentMethod.CASH_ON_DELIVERY, null=True, blank=True)
 
@@ -71,6 +71,17 @@ class Order(TimeStampedModel):
         ordering = ["-created"]
         
 
+
+    def save(self, **kwargs):
+        # if order.cart has Order Items update total_price
+        if self.cart:
+            self.total_price = sum([order_item.sub_total_price for order_item in OrderItem.objects.filter(order=self)])
+
+        if not self.shipping_address:
+            if self.customer.address:
+                self.shipping_address = self.customer.address
+            
+        super(Order, self).save(**kwargs)
 
 
 class OrderItem(TimeStampedModel):

@@ -25,5 +25,5 @@ class Cart(TimeStampedModel):
     
     
     def total(self):
-        return self.product.price * self.quantity
+        return self.product.price * self.item_quantity
     
