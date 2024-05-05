@@ -28,7 +28,8 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
         except AttributeError:
             return self.queryset.none()
             
-        if customer:
+        if customer:            
+
             try:
                 return self.queryset.filter(customer=customer)
             except Exception as e:
@@ -52,6 +53,8 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
         else:
             # Check if the user has items in the cart
             cart = Cart.objects.filter(customer=request.user.customer).first()
+
+            
             
             if not cart:
                 return Response({"error": "Your cart is empty. Add products to make an order or use your existing cart."}, status=status.HTTP_400_BAD_REQUEST)
@@ -82,8 +85,23 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
                 cart=cart
             )
 
-            # Delete the cart after creating the order
+            customer_carts = Cart.objects.filter(customer=customer)
+
+            # Retrieve products associated with the carts
+            customer_carts_products = [cart.product for cart in customer_carts]
             
+            for product in customer_carts_products:
+                order_item = OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    quantity=cart.item_quantity,
+                    sub_total_price=cart.product.price
+                )
+                order_item.save()
+            
+        
+            order.total_price = sum([order_item.sub_total_price for order_item in OrderItem.objects.filter(order=order)])
+            order.save()
 
             return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
     
@@ -115,91 +133,6 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-
-
-class OrderItemViewSetForCustomers(viewsets.ModelViewSet):
-    queryset = OrderItem.objects.all()
-    serializer_class = OrderItemSerializer
-    permission_classes = [IsAuthenticated]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['order', 'product', 'quantity',]
-
-    def get_queryset(self):
-        return self.queryset.filter(order__customer=self.request.user.customer)
-    
-    def create(self, request, *args, **kwargs):
-        if not request.user.customer:
-            return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
-        
-
-        # Check if products in the cart or order in general are available or not and also the quantity required is less than or equal to the quantity available
-        cart = Cart.objects.filter(customer=request.user.customer).first()
-        if not cart:
-            return Response({"error": "Cart is empty"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        
-        product = cart.product
-
-        if product.quantity < cart.quantity or product.quantity < 1 or not product.available:
-            return Response({"error": "Product is not available in the required quantity"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-        order_item = OrderItem.objects.filter(product=product).first()
-
-        if product.quantity < order_item.quantity or product.quantity < 1 or not product.available:
-            return Response({"error": "Product is not available in the required quantity"}, status=status.HTTP_400_BAD_REQUEST)
-        
-
-        if order_item:
-            product.quantity -= order_item.quantity
-            product.save()
-
-            if product.quantity < 1:
-                product.available = False
-                product.save()
-        
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        order_item = serializer.save()
-
-        headers = self.get_success_headers(serializer.data)
-
-        return Response(OrderItemSerializer(order_item).data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-    # def update(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-
-    #     if instance.order.customer != request.user.customer:
-    #         return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
-
-
-    #     if instance.product.quantity < instance.quantity or instance.product.quantity < 1 or not instance.product.available:
-    #         return Response({"error": "Product is not available in the required quantity"}, status=status.HTTP_400_BAD_REQUEST)
-        
-
-    #     serializer = self.get_serializer(instance, data=request.data, partial=True)
-    #     serializer.is_valid(raise_exception=True)
-    #     order_item = serializer.save()
-
-    #     return Response(OrderItemSerializer(order_item).data)
-
-
-    
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-
-        if instance.order.customer != request.user.customer:
-            return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
-
-
-        # after destroying the order item, the quantity of the product should be restored
-        product = instance.product
-        product.quantity += instance.quantity
-        product.save()
-
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 

@@ -81,7 +81,8 @@ class Order(TimeStampedModel):
         if not self.shipping_address:
             if self.customer.address:
                 self.shipping_address = self.customer.address
-            
+        
+        
         super(Order, self).save(**kwargs)
 
 
@@ -96,6 +97,12 @@ class OrderItem(TimeStampedModel):
         verbose_name = "Order Item"
         verbose_name_plural = "Order Items"
         ordering = ["-created"]
+
+    
+    def save(self, **kwargs):
+        self.sub_total_price = self.product.price * self.quantity
+        super(OrderItem, self).save(**kwargs)
+    
 
         
 

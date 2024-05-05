@@ -36,6 +36,8 @@ class CartViewSet(viewsets.ModelViewSet):
             return self.queryset.filter(customer=customer)
         
     def create(self, request, *args, **kwargs):
+        item_quantity = request.data.get('item_quantity', None)
+
         try:
             product = Product.objects.get(id=request.data.get('product_id'))
             customer = Customer.objects.get(id=request.user.customer.id)
@@ -59,7 +61,7 @@ class CartViewSet(viewsets.ModelViewSet):
             )
 
         if product and customer:
-            cart_product = Cart.objects.create(customer=customer, product=product)
+            cart_product = Cart.objects.create(customer=customer, product=product, item_quantity=item_quantity)
             cart_product.save()
             return Response(
                 {

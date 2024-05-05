@@ -18,7 +18,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         # fields = "__all__"
-        exclude = ['modified', ]
+        exclude = ['modified', 'cart',]
         depth = 1
 
 
@@ -35,17 +35,7 @@ class OrderSerializer(serializers.ModelSerializer):
             representation['items'] = OrderItemSerializer(order_items, many=True).data
         
 
-        if instance.cart:
-            representation['cart'] = {
-                "id": instance.cart.id,
-                "created": instance.cart.created,
-                "item_quantity": instance.cart.item_quantity,
-                "product": {
-                    "name": instance.cart.product.name,
-                    "price": instance.cart.product.price,
-                    # "image": instance.cart.product.image
-                }
-            }
+        
 
         return representation
 

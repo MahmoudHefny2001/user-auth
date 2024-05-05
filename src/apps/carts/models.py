@@ -18,6 +18,7 @@ class Cart(TimeStampedModel):
         verbose_name = "Cart"
         verbose_name_plural = "Carts"
         ordering = ["-created"]
+        # 
         
 
     def __str__(self):
@@ -26,4 +27,7 @@ class Cart(TimeStampedModel):
     
     def total(self):
         return self.product.price * self.item_quantity
+    
+
+
     
