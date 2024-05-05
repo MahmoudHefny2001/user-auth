@@ -1,5 +1,0 @@
-- Deploy to Production From Staging branch
-    - check settings variables and change them if needed
-
-- Deploy to testing From testing branch
-    - check settings variables and change them if needed
