@@ -17,6 +17,7 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication,]
     filter_backends = [filters.SearchFilter]
     search_fields = ['status', 'order_id', 'order_name', 'extra_notes', 'shipping_address',]
 
