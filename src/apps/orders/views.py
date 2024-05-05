@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from .models import Order, OrderItem
 
-from .serializers import OrderSerializer, OrderItemSerializer
+from .serializers import OrderSerializer, OrderItemSerializer, OrderSerializerForMerchants
 
 from apps.carts.models import Cart
 
@@ -29,8 +29,10 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
             return self.queryset.none()
             
         if customer:
-            return self.queryset.filter(customer=customer)
-        
+            try:
+                return self.queryset.filter(customer=customer)
+            except Exception as e:
+                print(e)
     
     def create(self, request, *args, **kwargs):
 
@@ -46,9 +48,11 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
             # If products are provided directly in the request, return an error
             return Response({"error": "You cannot provide products directly. Use your cart to create an order."}, status=status.HTTP_400_BAD_REQUEST)
 
+
         else:
             # Check if the user has items in the cart
             cart = Cart.objects.filter(customer=request.user.customer).first()
+            
             if not cart:
                 return Response({"error": "Your cart is empty. Add products to make an order or use your existing cart."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -61,6 +65,13 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
                 if cart.product.quantity < 1:
                     cart.product.available = False
                     cart.product.save()
+
+
+            # Check if the user has a shipping address
+            customer = request.user.customer
+            
+            if not (customer.address or request.data.get("shipping_address")):
+                return Response({"error": "You need to add your address to your profile or specify a shipping address before making an order"}, status=status.HTTP_400_BAD_REQUEST)
 
             # Create order based on cart items
             order = Order.objects.create(
@@ -194,7 +205,7 @@ class OrderItemViewSetForCustomers(viewsets.ModelViewSet):
 
 class OrderViewSetForMerchants(viewsets.ModelViewSet):
     queryset = Order.objects.all()
-    serializer_class = OrderSerializer
+    serializer_class = OrderSerializerForMerchants
     permission_classes = [IsAuthenticated]
     authentication_classes = (JWTAuthentication,)
     filter_backends = [filters.SearchFilter]
@@ -203,6 +214,9 @@ class OrderViewSetForMerchants(viewsets.ModelViewSet):
     http_method_names = ['get', 'retrieve',]
 
     def get_queryset(self):
+        if not self.request.user.merchant:
+            return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
+        
         return self.queryset.filter(cart__product__merchant=self.request.user.merchant)
     
     

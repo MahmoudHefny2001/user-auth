@@ -23,7 +23,7 @@ class CartViewSet(viewsets.ModelViewSet):
     throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
 
 
-    http_method_names   = ['get','delete', 'post',]
+    http_method_names   = ['get','delete', 'post', 'patch',]
     
     def get_queryset(self):
         customer = None
@@ -123,3 +123,26 @@ class CartViewSet(viewsets.ModelViewSet):
                 },
                 status=400
             )
+
+
+    def partial_update(self, request, *args, **kwargs):
+        item_quantity = request.data.get('item_quantity')
+
+        if not item_quantity:
+            return Response(
+                {
+                    "message": "Item quantity is required."
+                },
+                status=400
+            )
+
+        cart = self.get_object()
+        cart.item_quantity = item_quantity
+        cart.save()
+        return Response(
+            {
+                "message": "Cart updated successfully.",
+                
+            },
+            status=200
+        )
