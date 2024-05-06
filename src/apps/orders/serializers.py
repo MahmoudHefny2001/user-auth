@@ -6,18 +6,14 @@ from .models import Order, OrderItem
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        # fields = "__all__"
         exclude = ["order", 'modified']
-
 
 
 class OrderSerializer(serializers.ModelSerializer):
     customer = serializers.PrimaryKeyRelatedField(read_only=True)
     
-
     class Meta:
         model = Order
-        # fields = "__all__"
         exclude = ['modified', 'cart',]
         depth = 1
 
@@ -35,11 +31,7 @@ class OrderSerializer(serializers.ModelSerializer):
             representation['items'] = OrderItemSerializer(order_items, many=True).data
         
 
-        
-
         return representation
-
-
 
 
 class OrderSerializerForMerchants(serializers.ModelSerializer):
@@ -86,3 +78,4 @@ class OrderSerializerForMerchants(serializers.ModelSerializer):
             }
 
         return representation
+    
