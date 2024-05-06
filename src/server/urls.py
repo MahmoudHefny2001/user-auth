@@ -41,6 +41,8 @@ urlpatterns = [
 
     path("orders/", include("apps.orders.urls")), #
 
+    path("payments/", include("apps.payments.urls")), #
+
     path('api-documentation/', schema_view.with_ui('swagger', cache_timeout=0),name='schema-swagger-ui'), #
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
