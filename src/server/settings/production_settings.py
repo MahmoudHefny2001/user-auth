@@ -18,16 +18,6 @@ HOST_URL = os.environ.get("HOST_URL")
 
 
 
-# import cloudinary
-# import cloudinary.uploader
-# import cloudinary.api
-
-# CLOUDINARY_STORAGE = {
-#   	'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
-#   	'API_KEY': os.environ.get("API_KEY"),
-#   	'API_SECRET': os.environ.get("API_SECRET")
-# }
-
 INSTALLED_APPS += [
     # 'cloudinary_storage', # Cloudinary Storage
     # 'cloudinary',      # Cloudinary
@@ -75,7 +65,20 @@ AUTHENTICATION_BACKENDS += [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+
+
+# import cloudinary
+# import cloudinary.uploader
+# import cloudinary.api
+
+# CLOUDINARY_STORAGE = {
+#   	'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
+#   	'API_KEY': os.environ.get("API_KEY"),
+#   	'API_SECRET': os.environ.get("API_SECRET")
+# }
 # DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
 
 MEDIA_URL = '/media/'  # or any prefix you choose
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -104,8 +107,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 # MEDIA_URL = os.environ.get("BLOB_READ_WRITE_TOKEN") ## Vercel Blob Storage
 # MEDIA_URL = 'https://vpz2sexxpggaxlxl.public.blob.vercel-storage.com/media/' ## Vercel Blob Storage
 # MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
-
 
 
 
@@ -140,3 +141,45 @@ REST_FRAMEWORK = {
 }
 
 
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://*.",
+    "http://localhost:8000",
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_ORIGINS = [
+    "http://localhost:8083",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'http://*',
+]
+
+
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",
+    'api_key',          
+    'Authorization',
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    "ngrok-skip-browser-warning"
+    'accept-encoding',
+    'dnt',
+    'origin',
+]

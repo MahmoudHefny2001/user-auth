@@ -108,18 +108,26 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
 
     
 
-    # def update(self, request, *args, **kwargs):
-    #     instance = self.get_object()
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
 
-    #     if instance.customer != request.user.customer:
-    #         return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
+        if instance.customer != request.user.customer:
+            return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
 
-    #     serializer = self.get_serializer(instance, data=request.data, partial=True)
-    #     serializer.is_valid(raise_exception=True)
-    #     order = serializer.save()
+        shipping_address = request.data.get("shipping_address", None)
+        payment_method = request.data.get("payment_method", None)
+        extra_notes = request.data.get("extra_notes", None)
 
+        if shipping_address:
+            instance.shipping_address = shipping_address
+        if payment_method:
+            instance.payment_method = payment_method
+        if extra_notes:
+            instance.extra_notes = extra_notes
 
-    #     return Response(OrderSerializer(order).data)
+        instance.save()
+
+        return Response(OrderSerializer(instance).data, status=status.HTTP_200_OK)
     
 
     def destroy(self, request, *args, **kwargs):
@@ -152,4 +160,17 @@ class OrderViewSetForMerchants(viewsets.ModelViewSet):
         
         return self.queryset.filter(cart__product__merchant=self.request.user.merchant)
     
+    
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if instance.cart.product.merchant != request.user.merchant:
+            return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
+
+        status = request.data.get("status", None)
+        if status:
+            instance.status = status
+            instance.save()
+            return Response(OrderSerializerForMerchants(instance).data)
+        return Response({"error": "You need to provide a status to update the order"}, status=status.HTTP_400_BAD_REQUEST)
     

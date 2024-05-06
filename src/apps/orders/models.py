@@ -107,36 +107,6 @@ class OrderItem(TimeStampedModel):
         
 
 
-# class OrderItemReview(TimeStampedModel):
-#     order_item = models.OneToOneField(OrderItem, on_delete=models.CASCADE, related_name="review")
-#     rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-#     review = models.TextField()
-#     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, related_name="order_item_reviews")
-#     customer = models.ForeignKey(Customer, on_delete=models.DO_NOTHING, related_name="order_item_reviews")
-      
-#     class Meta:
-#         db_table = "order_item_reviews"
-#         verbose_name = "Order Item Review"
-#         verbose_name_plural = "Order Item Reviews"
-#         ordering = ["-created"]
-        
-
-
-
-# class OrderReview(TimeStampedModel):
-#     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="review")
-#     rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-#     review = models.TextField()
-#     customer = models.ForeignKey(Customer, on_delete=models.DO_NOTHING, related_name="order_reviews")
-        
-
-#     class Meta:
-#         db_table = "order_reviews"
-#         verbose_name = "Order Review"
-#         verbose_name_plural = "Order Reviews"
-#         ordering = ["-created"]
-
-
 # class OrderRefund(TimeStampedModel):
 #     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="refund")
 #     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
@@ -168,6 +138,7 @@ class OrderItem(TimeStampedModel):
 #         verbose_name = "Order Return"
 #         verbose_name_plural = "Order Returns"
 #         ordering = ["-created"]
+
 
 
 # class OrderExchange(TimeStampedModel):

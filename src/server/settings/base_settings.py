@@ -6,18 +6,12 @@ import os
 
 from datetime import timedelta
 
-# from dotenv import load_dotenv
-# 
-# load_dotenv(".env.base")
 
 SECRET_KEY = os.environ.get("SECRET_KEY", None)
 
 DEBUG = os.environ.get("DEBUG", True)
 
 ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
-
-HOST_URL = os.environ.get("HOST_URL")
-
 
 
 # Application definition
@@ -189,25 +183,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'server.wsgi.application'
 
 
-DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
-    
-    # "default": {
-    #     "ENGINE": "django.db.backends.postgresql",
-    #     "DATABASE_URL": str(os.environ.get("DATABASE_URL")),
-    #     "NAME": str(os.environ.get("DATABASE_NAME")),
-    #     "USER": str(os.environ.get("DATABASE_USER")),
-    #     "PASSWORD": str(os.environ.get("DATABASE_PASSWORD")),
-    #     "HOST": str(os.environ.get("DATABASE_HOST")),
-    #     "PORT": int(os.environ.get("DATABASE_PORT")),
-    #     # 'TEST': {
-    #     #     'NAME': '',
-    #     # },
-    # }
-}
 
 
 
@@ -243,12 +218,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://*.",
-    "http://localhost:8000",
-]
-
-
 # Local static files
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -261,16 +230,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-CORS_ALLOW_ALL_ORIGINS = True
-
-CORS_ALLOW_ORIGINS = [
-    "http://localhost:8083",
-]
-
-CORS_ALLOWED_ORIGINS = [
-    'http://*',
-]
 
 
 JAZZMIN_SETTINGS = {
@@ -292,30 +251,6 @@ JAZZMIN_SETTINGS = {
 }
 
 
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
-
-
-CORS_ALLOW_HEADERS = [
-    "accept",
-    "authorization",
-    "content-type",
-    'api_key',          
-    'Authorization',
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-    "ngrok-skip-browser-warning"
-    'accept-encoding',
-    'dnt',
-    'origin',
-]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = True
