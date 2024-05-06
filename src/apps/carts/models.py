@@ -9,7 +9,8 @@ from apps.products.models import Product
 
 class Cart(TimeStampedModel):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="carts")
-    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, related_name="carts")    
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="carts")    
 
     item_quantity = models.PositiveIntegerField(default=1, blank=True, null=True)
 

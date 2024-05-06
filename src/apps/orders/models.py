@@ -88,7 +88,7 @@ class Order(TimeStampedModel):
 
 class OrderItem(TimeStampedModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_items")
-    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, related_name="order_items")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="order_items")
     quantity = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
     sub_total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     

@@ -6,6 +6,10 @@ import os
 
 from datetime import timedelta
 
+from dotenv import load_dotenv
+
+load_dotenv("environments/.env.local")
+
 
 SECRET_KEY = os.environ.get("SECRET_KEY", None)
 
@@ -181,7 +185,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'server.wsgi.application'
-
 
 
 
