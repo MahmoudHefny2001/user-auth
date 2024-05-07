@@ -48,14 +48,22 @@ class OrderSerializerForMerchants(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         
-        # check if there is products_ids in the request
         order_items = []
         try:
-            order_items = OrderItem.objects.filter(order=instance)
+            merchant = self.context['request'].user.merchant
+            try:
+                order_items = OrderItem.objects.filter(order=instance, product__merchant=merchant)
+            except Exception as e:
+                print("Error: ", e) 
+
         except OrderItem.DoesNotExist:
             order_items = None
         if order_items:
             representation['items'] = OrderItemSerializer(order_items, many=True).data
+        
+        
+        representation['total_price'] = sum([order_item.sub_total_price for order_item in order_items])
+        
         
 
         representation['customer'] = {
@@ -64,18 +72,6 @@ class OrderSerializerForMerchants(serializers.ModelSerializer):
             "phone_number": instance.customer.phone_number,
             "address": instance.customer.address,
         }
-
-        if instance.cart:
-            representation['cart'] = {
-                "id": instance.cart.id,
-                "created": instance.cart.created,
-                "item_quantity": instance.cart.item_quantity,
-                "product": {
-                    "name": instance.cart.product.name,
-                    "price": instance.cart.product.price,
-                    # "image": instance.cart.product.image
-                }
-            }
 
         return representation
     

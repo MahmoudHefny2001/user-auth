@@ -26,6 +26,9 @@ class MerchantSerializer(serializers.ModelSerializer):
             password = validated_data.get("password")
             business_name = validated_data.get("full_name")
             
+            address = validated_data.get("address", None)
+            payment_information = validated_data.get("payment_information", None)
+            terms_agreement = validated_data.get("terms_agreement", None)
 
             if email is None or phone_number is None or password is None or business_name is None:
                 raise serializers.ValidationError("Please provide all required fields.")

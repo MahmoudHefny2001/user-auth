@@ -259,6 +259,8 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
 
             colors = request.data.get('colors', None)
 
+            bar_code = request.data.get('bar_code', None)
+
             if name:
                 product.name = name
             if description:
@@ -268,6 +270,9 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
             if quantity:
                 product.quantity = quantity
         
+            if bar_code:
+                product.bar_code = bar_code
+            
             # if colors:
                 # from .models import ProductColor
                 # Delete all colors for the product

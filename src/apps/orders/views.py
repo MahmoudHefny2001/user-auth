@@ -31,6 +31,8 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
         if customer:            
 
             try:
+                if self.queryset.filter(status=Order.OrderStatus.CANCELED):
+                    return self.queryset.filter(customer=customer).exclude(status=Order.OrderStatus.CANCELED)
                 return self.queryset.filter(customer=customer)
             except Exception as e:
                 print(e)
@@ -92,6 +94,11 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
         order.total_price = sum([order_item.sub_total_price for order_item in OrderItem.objects.filter(order=order)])
         order.save()
 
+        # send email to merchant and customer 
+        # from .mail import send_merchant_order_email, send_customer_order_email
+        # send_merchant_order_email(order, order.cart.product.merchant)
+        # send_customer_order_email(order, customer)
+
         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
     
 
@@ -125,7 +132,12 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
         if instance.customer != request.user.customer:
             return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
         
-
+        order_items = OrderItem.objects.filter(order=instance)
+        for order_item in order_items:
+            order_item.product.quantity += order_item.quantity
+            order_item.product.save()
+            order_item.delete()
+        
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 

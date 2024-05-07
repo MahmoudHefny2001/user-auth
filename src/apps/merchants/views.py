@@ -71,7 +71,9 @@ class MerchantLoginView(APIView):
         if email_or_phone is None or password is None:
             return Response({'error': 'Please provide both email/phone and password'}, status=status.HTTP_400_BAD_REQUEST)    
 
-        merchant = CustomUserAuthenticationBackend().authenticate(request, username=email_or_phone, password=password)
+        user = CustomUserAuthenticationBackend().authenticate(request, username=email_or_phone, password=password)
+        
+        merchant = Merchant.objects.get(email=user.email) 
 
         if merchant and merchant.role == Merchant.Role.MERCHANT:
             refresh = RefreshToken.for_user(merchant)
@@ -82,7 +84,11 @@ class MerchantLoginView(APIView):
             },
             status=status.HTTP_200_OK
             )
-        return Response("Invalid Credentials", status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            "error": "Invalid Credentials",
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 

@@ -58,6 +58,10 @@ INSTALLED_APPS = [
     "apps.stocks", #
     "apps.reviews", #
     "apps.payments", #
+
+    # "apps.notifications", #
+    # "apps.shipments", #
+    
 ]
 
 CACHES = {

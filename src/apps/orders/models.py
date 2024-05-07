@@ -33,17 +33,18 @@ class Order(TimeStampedModel):
 
     status = models.CharField(max_length=50, choices=OrderStatus.choices, default=OrderStatus.PENDING, null=True, blank=True)
 
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="orders")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="orders", db_index=True)
 
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     
-    cart = models.ForeignKey(Cart, on_delete=models.DO_NOTHING, related_name="orders", null=True, blank=True)
+    cart = models.ForeignKey(Cart, on_delete=models.DO_NOTHING, related_name="orders", null=True, blank=True, db_index=True)
     
     shipping_address = models.TextField(null=True, blank=True,)
 
     payment_method = models.CharField(max_length=100, choices=PaymentMethod.choices, default=PaymentMethod.CASH_ON_DELIVERY, null=True, blank=True)
 
     extra_notes = models.TextField(null=True, blank=True)
+    
 
 
     def get_order_items(self):

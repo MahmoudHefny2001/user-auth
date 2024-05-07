@@ -158,6 +158,9 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
             if 'price_after_sale' in representation:
                 del representation['price_after_sale']
         
+        if instance.bar_code:
+            representation['bar_code'] = instance.bar_code
+
         return representation
     
 
