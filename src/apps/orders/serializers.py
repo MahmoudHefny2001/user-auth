@@ -13,8 +13,25 @@ class OrderItemSerializer(serializers.ModelSerializer):
         representation['product'] = {
             "name": instance.product.name,
             "price": instance.product.price,
-            "image": instance.product.image,
         }
+
+        
+        try: 
+            if instance.product.image:
+                request = self.context.get('request')
+                if request:
+                    representation['product']['image'] = request.build_absolute_uri(instance.product.image.url)
+                else:
+                    representation['product']['image'] = instance.product.image.url
+            else:
+                representation['product']['image'] = None
+        except FileNotFoundError:
+            representation['product']['image'] = None
+
+        except ValueError:
+            representation['product']['image'] = None
+        
+    
         return representation
 
 class OrderSerializer(serializers.ModelSerializer):
