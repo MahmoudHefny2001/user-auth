@@ -45,6 +45,9 @@ class Order(TimeStampedModel):
     extra_notes = models.TextField(null=True, blank=True)
 
 
+    def __str__(self) -> str:
+        return f"Order {self.id} by ({self.customer.full_name}) - ({self.status})"
+
     def get_order_items(self):
         order_items = []
 
