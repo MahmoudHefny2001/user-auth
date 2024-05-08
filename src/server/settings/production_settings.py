@@ -68,27 +68,18 @@ AUTHENTICATION_BACKENDS += [
 
 
 
-
-
-MEDIA_URL = '/media/'  # or any prefix you choose
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-
 RAILWAY_VOLUME_NAME = str(os.environ.get("RAILWAY_VOLUME_NAME"))
 RAILWAY_VOLUME_MOUNT_PATH = str(os.environ.get("RAILWAY_VOLUME_MOUNT_PATH"))
-MEDIA_ROOT = os.path.join(BASE_DIR, RAILWAY_VOLUME_MOUNT_PATH, 'media')
 
-
-
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
-
-# STATICFILES_DIRS On production is on railway volume
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 
-
+# Media Files (uploaded from users)
+MEDIA_URL = "media/"
+MEDIA_ROOT = os.environ.get("RAILWAY_VOLUME_MOUNT_PATH")
 
 
 
