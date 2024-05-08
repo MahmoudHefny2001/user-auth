@@ -4,7 +4,7 @@
         "builder": "NIXPACKS"
     },
     "deploy": {
-        "startCommand": "celery -A server.celery worker --loglevel=INFO python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py collectstatic --no-input && gunicorn server.wsgi",
+        "startCommand": "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py collectstatic --no-input && gunicorn server.wsgi",
         "restartPolicyType": "ON_FAILURE",
         "restartPolicyMaxRetries": 10
     }
