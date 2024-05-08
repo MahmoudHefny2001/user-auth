@@ -218,7 +218,7 @@ class RetrieveProductsSerializerForMerchants(serializers.ModelSerializer):
     class Meta:
         model = Product
         # fields = "__all__"
-        exclude = ['created', 'modified', 'merchant',]
+        exclude = ['created', 'modified', 'merchant', 'quantity', 'bar_code']
         depth = 2
 
     def to_representation(self, instance):
@@ -253,6 +253,9 @@ class RetrieveProductsSerializerForMerchants(serializers.ModelSerializer):
     # handle multiple images upload
     def create(self, validated_data):
         images_data = self.context.get('view').request.FILES
+
+        if not validated_data['quantity']:
+            raise serializers.ValidationError({"quantity": "This field is required."})
 
         product = Product.objects.create(**validated_data)
         

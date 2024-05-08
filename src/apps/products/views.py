@@ -333,5 +333,15 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
                 status=403
             )
         
+        # delete related cart and orders and items realted to this product before deleteing the product itself
+        from apps.orders.models import OrderItem, Order
+        from apps.carts.models import Cart
+        OrderItem.objects.filter(product=product).delete()
+        Order.objects.filter(cart__product=product).delete()
+        Cart.objects.filter(product=product).delete()
+        product.delete()
+
+        
+        
         return super().destroy(request, *args, **kwargs)
     

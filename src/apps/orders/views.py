@@ -12,6 +12,7 @@ from apps.carts.models import Cart
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from .mail import send_customer_order_email, send_merchant_order_email
 
 class OrderViewSetForCustomers(viewsets.ModelViewSet):
     queryset = Order.objects.all()
@@ -31,12 +32,11 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
         if customer:            
 
             try:
-                if self.queryset.filter(status=Order.OrderStatus.CANCELED):
-                    return self.queryset.filter(customer=customer).exclude(status=Order.OrderStatus.CANCELED)
-                return self.queryset.filter(customer=customer)
+                return self.queryset.filter(customer=customer).exclude(status=Order.OrderStatus.CANCELED)
             except Exception as e:
                 print(e)
     
+
     def create(self, request, *args, **kwargs):
 
         # Check if the user has a customer profile
@@ -44,36 +44,51 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
             return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
 
 
-        # Check if the user has items in the cart
-        cart = Cart.objects.filter(customer=request.user.customer).first()
+        customer = request.user.customer
 
+        shipping_address = None
+
+        cart = Cart.objects.filter(customer=request.user.customer).first()
+        
         if not cart:
             return Response({"error": "Your cart is empty. Add products to make an order or use your existing cart."}, status=status.HTTP_400_BAD_REQUEST)
 
+
+        if not customer.address:
+            shipping_address = request.data.get("shipping_address")
+
+            if not shipping_address: 
+                return Response({"error": "You need to add your address to your profile or specify a shipping address before making an order"}, status=status.HTTP_400_BAD_REQUEST)
+
+
         # Check if cart items are available and update stock
         for cart in Cart.objects.filter(customer=request.user.customer):
-            if cart.item_quantity < 1 or not cart.product.available or cart.item_quantity > cart.product.quantity:
+            
+            product = cart.product
+            
+            if not product.available or cart.item_quantity > product.quantity:
                 return Response({"error": f"{cart.product.name} is not available in the required quantity"}, status=status.HTTP_400_BAD_REQUEST)
-            cart.product.quantity -= cart.item_quantity
-            cart.product.save()
-            if cart.product.quantity < 1:
-                cart.product.available = False
-                cart.product.save()
+            
+            product.quantity -= cart.item_quantity
+            
+            if product.quantity < 1:
+                product.available = False
+                product.save()
 
+            product.save()
+            
+            cart.save()
 
-        # Check if the user has a shipping address
-        customer = request.user.customer
         
-        if not (customer.address or request.data.get("shipping_address")):
-            return Response({"error": "You need to add your address to your profile or specify a shipping address before making an order"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Create order based on cart items
+        
         order = Order.objects.create(
             customer=request.user.customer,
-            total_price=cart.total(),
-            shipping_address=request.data.get("shipping_address", None),
-            payment_method=request.data.get("payment_method",) if request.data.get("payment_method",) else Order.PaymentMethod.CASH_ON_DELIVERY,
-            cart=cart
+            total_price=sum([cart.product.price for cart in Cart.objects.filter(customer=request.user.customer)]),
+            shipping_address=shipping_address,
+            cart=cart,
+            # if not provided, the default set it to be the default payment method, if sent, it will be the provided payment method
+            payment_method=request.data.get("payment_method", Order.PaymentMethod.CASH_ON_DELIVERY),
         )
 
         customer_carts = Cart.objects.filter(customer=customer)
@@ -92,15 +107,15 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
         
     
         order.total_price = sum([order_item.sub_total_price for order_item in OrderItem.objects.filter(order=order)])
+
         order.save()
-
-        # send email to merchant and customer 
-        # from .mail import send_merchant_order_email, send_customer_order_email
-        # send_merchant_order_email(order, order.cart.product.merchant)
-        # send_customer_order_email(order, customer)
-
-        return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
     
+        # Send emails to the merchant and the customer non-blocking using Celery
+        send_merchant_order_email(order,)
+        send_customer_order_email(order,)
+        
+        return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+
 
     
 
@@ -133,10 +148,15 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
             return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
         
         order_items = OrderItem.objects.filter(order=instance)
+
         for order_item in order_items:
-            order_item.product.quantity += order_item.quantity
-            order_item.product.save()
+            product = order_item.product            
+            product.quantity += order_item.quantity
+            if product.quantity > 0:
+                product.available = True
+                product.save()
             order_item.delete()
+        
         
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)

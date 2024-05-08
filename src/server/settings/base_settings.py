@@ -74,6 +74,11 @@ CACHES = {
     }
 }
 
+# Celery settings
+CELERY_BROKER_URL = os.environ.get("REDIS_BROKER_URL")
+CELERY_RESULT_BACKEND = os.environ.get("REDIS_RESULT_BACKEND_URL")
+
+
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [

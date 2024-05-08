@@ -23,12 +23,11 @@ class Order(TimeStampedModel):
 
     class PaymentMethod(models.TextChoices):
         CREDIT_CARD = 'Credit Card', 'Credit Card'
-        DEBIT_CARD = 'Debit Card', 'Debit Card'
         PAYPAL = 'PayPal', 'PayPal'
         CASH_ON_DELIVERY = 'Cash on Delivery', 'Cash on Delivery'
         MOBILE_MONEY = 'Mobile Money', 'Mobile Money'
         BANK_TRANSFER = 'Bank Transfer', 'Bank Transfer'
-        OTHER = 'Other', 'Other'
+        
 
 
     status = models.CharField(max_length=50, choices=OrderStatus.choices, default=OrderStatus.PENDING, null=True, blank=True)
@@ -44,7 +43,6 @@ class Order(TimeStampedModel):
     payment_method = models.CharField(max_length=100, choices=PaymentMethod.choices, default=PaymentMethod.CASH_ON_DELIVERY, null=True, blank=True)
 
     extra_notes = models.TextField(null=True, blank=True)
-    
 
 
     def get_order_items(self):
@@ -82,9 +80,10 @@ class Order(TimeStampedModel):
         if not self.shipping_address:
             if self.customer.address:
                 self.shipping_address = self.customer.address
+
+        super().save(**kwargs)
         
-        
-        super(Order, self).save(**kwargs)
+
 
 
 class OrderItem(TimeStampedModel):
@@ -92,7 +91,7 @@ class OrderItem(TimeStampedModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="order_items")
     quantity = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
     sub_total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    
+
     class Meta:
         db_table = "order_items"
         verbose_name = "Order Item"
@@ -102,7 +101,7 @@ class OrderItem(TimeStampedModel):
     
     def save(self, **kwargs):
         self.sub_total_price = self.product.price * self.quantity
-        super(OrderItem, self).save(**kwargs)
+        super().save(**kwargs)
     
 
         

@@ -4,13 +4,16 @@ from django.dispatch import receiver
 from apps.products.models import Product
 from .models import Order, OrderItem
 
+from time import sleep
 
 @receiver(post_save, sender=Product)
 def cancel_order_when_product_is_deleted(sender, instance, created, **kwargs):
     try:
+        sleep(5)
         orders = Order.objects.filter(cart__product=instance)
         for order in orders:
             order.status = "CANCELLED"
             order.save()
     except Exception as e:
         print(e)
+
