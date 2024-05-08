@@ -7,12 +7,9 @@ from dotenv import load_dotenv
 load_dotenv("environments/.env.production")
 
 
-SECRET_KEY = os.environ.get("SECRET_KEY", None)
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = os.environ.get("DEBUG")
-
-if DEBUG:
-    DEBUG = False
+DEBUG = False
 
 ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 
