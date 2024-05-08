@@ -230,6 +230,26 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
+DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
+    
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "DATABASE_URL": str(os.environ.get("DATABASE_URL")),
+        "NAME": str(os.environ.get("DATABASE_NAME")),
+        "USER": str(os.environ.get("DATABASE_USER")),
+        "PASSWORD": str(os.environ.get("DATABASE_PASSWORD")),
+        "HOST": str(os.environ.get("DATABASE_HOST")),
+        "PORT": int(os.environ.get("DATABASE_PORT")),
+        # 'TEST': {
+        #     'NAME': '',
+        # },
+    }
+}
+
 # Local static files
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
