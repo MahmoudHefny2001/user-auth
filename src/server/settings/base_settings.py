@@ -11,9 +11,9 @@ from dotenv import load_dotenv
 load_dotenv("environments/.env.local")
 
 
-SECRET_KEY = os.environ.get("SECRET_KEY", None)
+SECRET_KEY = os.environ.get("SECRET_KEY",)
 
-DEBUG = os.environ.get("DEBUG", True)
+DEBUG = os.environ.get("DEBUG",)
 
 ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 
@@ -76,8 +76,8 @@ CACHES = {
 
 # Celery settings
 CELERY_BROKER_URL = os.environ.get("REDIS_BROKER_URL")
-CELERY_RESULT_BACKEND = os.environ.get("REDIS_RESULT_BACKEND_URL")
-
+# CELERY_RESULT_BACKEND = os.environ.get("REDIS_RESULT_BACKEND_URL")
+RESULT_BACKEND = os.environ.get("REDIS_RESULT_BACKEND_URL")
 
 
 REST_FRAMEWORK = {
