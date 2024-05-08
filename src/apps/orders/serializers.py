@@ -7,7 +7,15 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         exclude = ["order", 'modified']
-
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['product'] = {
+            "name": instance.product.name,
+            "price": instance.product.price,
+            "image": instance.product.image,
+        }
+        return representation
 
 class OrderSerializer(serializers.ModelSerializer):
     customer = serializers.PrimaryKeyRelatedField(read_only=True)
