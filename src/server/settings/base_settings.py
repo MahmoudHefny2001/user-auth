@@ -76,7 +76,6 @@ CACHES = {
 
 # Celery settings
 CELERY_BROKER_URL = os.environ.get("REDIS_BROKER_URL")
-# CELERY_RESULT_BACKEND = os.environ.get("REDIS_RESULT_BACKEND_URL")
 RESULT_BACKEND = os.environ.get("REDIS_RESULT_BACKEND_URL")
 
 
@@ -250,15 +249,9 @@ DATABASES = {
     }
 }
 
-# Local static files
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_FILES_DIRS = [BASE_DIR / "static",]
 
 
-# Loacl media files
-MEDIA_URL = "media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

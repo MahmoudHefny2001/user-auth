@@ -21,8 +21,6 @@ HOST_URL = os.environ.get("HOST_URL")
 
 
 INSTALLED_APPS += [
-    # 'cloudinary_storage', # Cloudinary Storage
-    # 'cloudinary',      # Cloudinary
 
     'allauth',
     'allauth.account',
@@ -69,16 +67,6 @@ AUTHENTICATION_BACKENDS += [
 
 
 
-# import cloudinary
-# import cloudinary.uploader
-# import cloudinary.api
-
-# CLOUDINARY_STORAGE = {
-#   	'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
-#   	'API_KEY': os.environ.get("API_KEY"),
-#   	'API_SECRET': os.environ.get("API_SECRET")
-# }
-# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 
@@ -88,27 +76,18 @@ MEDIA_URL = '/media/'  # or any prefix you choose
 
 RAILWAY_VOLUME_NAME = str(os.environ.get("RAILWAY_VOLUME_NAME"))
 RAILWAY_VOLUME_MOUNT_PATH = str(os.environ.get("RAILWAY_VOLUME_MOUNT_PATH"))
-MEDIA_ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), RAILWAY_VOLUME_MOUNT_PATH)
-
-
-# RAILWAY_VOLUME_NAME = str(os.environ.get("RAILWAY_VOLUME_NAME"))
-# RAILWAY_VOLUME_MOUNT_PATH = str(os.environ.get("RAILWAY_VOLUME_MOUNT_PATH"))
-
-# Static files (CSS, JavaScript, Images)
-# STATIC_URL = 'static/'
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-# STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
-STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, RAILWAY_VOLUME_MOUNT_PATH, 'media')
 
 
 
-# Media Files (uploaded from users)
-# MEDIA_URL = "media/"
-# MEDIA_URL = os.environ.get("BLOB_READ_WRITE_TOKEN") ## Vercel Blob Storage
-# MEDIA_URL = 'https://vpz2sexxpggaxlxl.public.blob.vercel-storage.com/media/' ## Vercel Blob Storage
-# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+STATIC_URL = 'static/'
+
+# STATICFILES_DIRS On production is on railway volume
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
 
 
 
