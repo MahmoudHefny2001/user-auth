@@ -41,9 +41,9 @@ Flask==3.0.3
 Flask-Cors==4.0.0
 Flask-Login==0.6.3
 flower==2.0.1
-gevent==24.2.1
-geventhttpclient==2.2.1
-greenlet==3.0.3
+
+
+
 gunicorn==21.2.0
 humanize==4.9.0
 idna==3.4
