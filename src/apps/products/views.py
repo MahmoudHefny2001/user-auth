@@ -72,7 +72,7 @@ class HomeViewSet(views.APIView):
                     "on_sale": product.on_sale,
                     "sale_percent": str(int(product.sale_percent)) + "%",
                     "price_after_sale": product.price_after_sale ,
-                    "main_image": product.get_image_url(),
+                    "main_image": product.image.url,
                     "average_rating": product.average_rating,
                 }
                 products.append(product_data)
@@ -82,7 +82,7 @@ class HomeViewSet(views.APIView):
                     "name": product.name,
                     "description": product.description,
                     "price": float(product.price),
-                    "main_image": product.get_image_url(),
+                    "main_image": product.image.url,
                     "average_rating": product.average_rating,
                 }
                 products.append(product_data)

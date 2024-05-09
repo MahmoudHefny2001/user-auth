@@ -13,9 +13,12 @@ load_dotenv("environments/.env.local")
 
 SECRET_KEY = os.environ.get("SECRET_KEY",)
 
-DEBUG = os.environ.get("DEBUG")
+DEBUG = False
 
 ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
+
+
+HOST_URL = os.environ.get("HOST_URL")
 
 
 # Application definition
