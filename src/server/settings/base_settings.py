@@ -24,6 +24,9 @@ HOST_URL = os.environ.get("HOST_URL")
 # Application definition
 
 INSTALLED_APPS = [
+    
+    'cloudinary_storage', # for cloudinary support for django
+    'cloudinary',     # for cloudinary support for django
 
     'adrf', # for asynchronous views support for drf
 
