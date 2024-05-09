@@ -23,6 +23,10 @@ INSTALLED_APPS += [
     'allauth.account',
     'allauth.socialaccount',
     
+
+    'cloudinary_storage', # for cloudinary support for django
+    'cloudinary',     # for cloudinary support for django
+    
 ]
 
 CLOUDINARY_STORAGE = {
