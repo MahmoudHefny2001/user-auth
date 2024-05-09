@@ -16,8 +16,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
         }
 
         try: 
-            request = self.context.get('request')
-            representation['product']['image'] = request.build_absolute_uri(instance.product.image.url)
+            representation['product']['image'] = "https://django-e-commerce-production.up.railway.app/" + instance.product.image.url
         except FileNotFoundError:
             representation['product']['image'] = None
 
