@@ -351,7 +351,12 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
         Cart.objects.filter(product=product).delete()
         product.delete()
 
+        return Response(
+            {
+                "message": "Product deleted successfully.",
+            }, 
+            status=200
+        )
         
         
-        return super().destroy(request, *args, **kwargs)
     

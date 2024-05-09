@@ -89,7 +89,7 @@ class CustomerProfileViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows CUSTOMER profiles to be viewed or edited.
     """
-    queryset = CustomerProfile.objects.all()
+    queryset = CustomerProfile.objects.all().order_by('-id')
     serializer_class = serializers.CustomerProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
     throttle_classes = [UserRateThrottle, AnonRateThrottle]

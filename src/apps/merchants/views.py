@@ -93,7 +93,7 @@ class MerchantLoginView(APIView):
 
 
 class MerchantProfileViewSet(viewsets.ModelViewSet):
-    queryset = MerchantProfile.objects.all()
+    queryset = MerchantProfile.objects.all().order_by("-id")
     serializer_class = serializers.MerchantProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [CustomJWTAuthenticationClass, JWTAuthentication]
