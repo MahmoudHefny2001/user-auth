@@ -15,8 +15,9 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "price": instance.product.price,
         }
 
-        try: 
-            representation['product']['image'] = "https://django-e-commerce-production.up.railway.app/" + instance.product.image.url
+        try:
+            import os
+            representation['product']['image'] = str(os.environ.get('HOST_URL') + instance.product.image.url)
         except FileNotFoundError:
             representation['product']['image'] = None
 
