@@ -63,19 +63,29 @@ class HomeViewSet(views.APIView):
         products = []
 
         for product in Product.objects.order_by('category').distinct('category')[:5]:
-
-            product_data = {
-                "id": product.id,
-                "name": product.name,
-                "description": product.description,
-                "price": float(product.price),
-                "on_sale": product.on_sale,
-                "sale_percent": str(int(product.sale_percent)) + "%",
-                "price_after_sale": product.price_after_sale ,
-                "main_image": product.get_image_url(),
-                "average_rating": product.average_rating,
-            }
-            products.append(product_data)
+            if product.on_sale:
+                product_data = {
+                    "id": product.id,
+                    "name": product.name,
+                    "description": product.description,
+                    "price": float(product.price),
+                    "on_sale": product.on_sale,
+                    "sale_percent": str(int(product.sale_percent)) + "%",
+                    "price_after_sale": product.price_after_sale ,
+                    "main_image": product.get_image_url(),
+                    "average_rating": product.average_rating,
+                }
+                products.append(product_data)
+            else:
+                product_data = {
+                    "id": product.id,
+                    "name": product.name,
+                    "description": product.description,
+                    "price": float(product.price),
+                    "main_image": product.get_image_url(),
+                    "average_rating": product.average_rating,
+                }
+                products.append(product_data)
 
             # add colors to the product data
             for product in products:
