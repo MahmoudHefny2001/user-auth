@@ -16,17 +16,16 @@ class OrderItemSerializer(serializers.ModelSerializer):
         }
 
         try: 
-            if instance.product.image:
-                request = self.context.get('request')
-                representation['product']['image'] = request.build_absolute_uri(instance.product.image.url)
-            else:
-                representation['product']['image'] = None
+            request = self.context.get('request')
+            representation['product']['image'] = request.build_absolute_uri(instance.product.image.url)
         except FileNotFoundError:
             representation['product']['image'] = None
 
         except ValueError:
             representation['product']['image'] = None
         
+        except Exception:
+            representation['product']['image'] = None
     
         return representation
 
@@ -35,8 +34,8 @@ class OrderSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Order
-        exclude = ['modified', 'cart',]
         depth = 1
+        exclude = ['modified', 'cart',]
 
 
     def to_representation(self, instance):
