@@ -28,6 +28,7 @@ INSTALLED_APPS += [
 
     'cloudinary_storage', # for cloudinary support for django
     'cloudinary',     # for cloudinary support for django
+    'storages',  
     
 ]
 
