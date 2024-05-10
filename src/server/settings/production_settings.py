@@ -45,7 +45,7 @@ CLOUDINARY_STORAGE = {
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 
@@ -55,14 +55,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # STATICFILES_DIRS = os.path.join(BASE_DIR, 'staticfiles'),
 
-# STORAGES = {
-#     "default": {
-#         "BACKEND": "cloudinary_storage.storage.backends.MediaCloudinaryStorage",
-#     },
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.backends.MediaCloudinaryStorage",
+    },
 #     "staticfiles": {
 #         "BACKEND": "cloudinary_storage.storage.backends.StaticHashedCloudinaryStorage",
 #     },
-# }
+}
 
 
 
@@ -142,6 +142,10 @@ REST_FRAMEWORK = {
 CSRF_TRUSTED_ORIGINS = [
     "http://*.",
     "http://localhost:8000",
+    "http://localhost:8083",
+    "http://localhost:3000",
+    "http://127.0.0.1:3001",
+    "http://127.0.0.1:5000",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
