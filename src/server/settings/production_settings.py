@@ -19,6 +19,8 @@ HOST_URL = os.environ.get("HOST_URL")
 
 INSTALLED_APPS += [
 
+    "whitenoise.runserver_nostatic", # for serving static files
+    
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -40,6 +42,14 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get("API_SECRET"),
 }
 
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.backends.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "cloudinary_storage.storage.backends.StaticHashedCloudinaryStorage",
+    },
+}
 
 
 
@@ -93,7 +103,7 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
 
-# STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
+STATICFILES_DIRS = os.path.join(BASE_DIR, 'staticfiles'),
 
 
 DATABASES = {

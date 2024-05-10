@@ -25,10 +25,6 @@ HOST_URL = os.environ.get("HOST_URL")
 
 INSTALLED_APPS = [
 
-    'adrf', # for asynchronous views support for drf
-
-    "whitenoise.runserver_nostatic", # for serving static files
-
     'jazzmin', # 
     'corsheaders',  #
     'rest_framework_swagger', #
