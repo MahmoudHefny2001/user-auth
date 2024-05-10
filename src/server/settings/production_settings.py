@@ -29,11 +29,20 @@ INSTALLED_APPS += [
     
 ]
 
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
     'API_KEY': os.environ.get("API_KEY"),
     'API_SECRET': os.environ.get("API_SECRET"),
 }
+
+
+
+
 
 MIDDLEWARE += [
     "allauth.account.middleware.AccountMiddleware",
@@ -78,9 +87,13 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-STATIC_URL = '/static/'
+
+
+STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+
+# STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
 
 
 DATABASES = {
