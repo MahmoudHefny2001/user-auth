@@ -18,19 +18,15 @@ HOST_URL = os.environ.get("HOST_URL")
 
 
 INSTALLED_APPS += [
-
-    "whitenoise.runserver_nostatic", # for serving static files
-    
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    
-
-    'cloudinary_storage', # for cloudinary support for django
-    'cloudinary',     # for cloudinary support for django
-    'storages',  
-    
 ]
+
+
+
+INSTALLED_APPS.insert(0, 'cloudinary_storage')
+INSTALLED_APPS.insert(1, 'cloudinary')
 
 
 import cloudinary
@@ -54,8 +50,7 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
-
+# STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
 
 
 

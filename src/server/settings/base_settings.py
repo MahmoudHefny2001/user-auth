@@ -24,7 +24,6 @@ HOST_URL = os.environ.get("HOST_URL")
 # Application definition
 
 INSTALLED_APPS = [
-
     'jazzmin', # 
     'corsheaders',  #
     'rest_framework_swagger', #
