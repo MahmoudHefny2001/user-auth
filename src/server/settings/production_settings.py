@@ -74,11 +74,12 @@ AUTHENTICATION_BACKENDS += [
 
 
 
-MEDIA_URL = 'media/'  # or any prefix you choose
+MEDIA_URL = 'media/' 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+
 
 DATABASES = {
     # 'default': {
