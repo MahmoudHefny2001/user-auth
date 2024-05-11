@@ -66,12 +66,14 @@ class CustomerLoginView(APIView):
 
         customer = CustomUserAuthenticationBackend().authenticate(request, username=email_or_phone, password=password)
 
+        customer_profile = CustomerProfile.objects.get(customer=customer)
+
         if customer and customer.role == Customer.Role.CUSTOMER:
             refresh = RefreshToken.for_user(customer)
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
-                'user': serializers.CustomerProfileSerializer(customer).data
+                'user': serializers.CustomerProfileSerializer(customer_profile).data,
             },
             status=status.HTTP_200_OK
             )

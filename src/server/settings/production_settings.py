@@ -9,7 +9,7 @@ load_dotenv("environments/.env.production")
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = list(str(os.environ.get("ALLOWED_HOSTS")).split(", "))
 
