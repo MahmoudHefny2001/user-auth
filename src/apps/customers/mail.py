@@ -28,7 +28,7 @@ def send_reset_password_email(email, token):
     send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
         to=[{"email":f"{email}","name":f"{email}"}],
         html_content=html_content,
-        sender={"name":"Hefny","email":"hefny4@gmail.com"}, 
+        sender={"name":"Hefny","email": settings.DEFAULT_FROM_EMAIL},
         subject=subject
     )
 

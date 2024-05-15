@@ -1,63 +1,57 @@
 from rest_framework import serializers
 
-from .models import Cart
+from .models import Cart, CartItem
 
-class CartSerializer(serializers.ModelSerializer):
+import os
+
+HOST_URL = os.environ.get('HOST_URL')
+
+
+class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cart
-        # fields = "__all__"
-        exclude = ['customer', 'created', 'modified',]
-        depth = 1
+        model = CartItem
+        exclude = ['created', 'modified', 'cart']
         read_only_fields = ['product', 'category']
 
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-
         representation['product'] = {
             "id": instance.product.id,
             "name": instance.product.name,
-            "description": instance.product.description,
-            "price": float(instance.product.price),
-            "on_sale": instance.product.on_sale,
+            "price": instance.product.price,
+            "merchant": {
+                "business_name": instance.product.merchant.full_name,
+            }
+            
         }
 
-        try:
-            request = self.context.get('request')
-            representation['product']['image'] = request.build_absolute_uri(instance.product.image.url)
-        except Exception as e:
-            representation['product']['image'] = None
-        
         if instance.product.category:
-            """
-            if the product has a category, we add the category to the representation
-            """
             representation['product']['category'] = {
                 "id": instance.product.category.id,
                 "name": instance.product.category.name,
             }
         
-
-        # product colors from the productColor Model that have a foreign key to the product
-        from apps.products.models import ProductColor
+        if instance.product.get_colors():
+            representation['product']['color'] = {
+                "id": instance.product.color.id,
+                "name": instance.product.color.name,
+                "code": instance.product.color.code,
+            }
         
-        try:
-            colors = ProductColor.objects.filter(product=instance.product)
-        except ProductColor.DoesNotExist:
-            colors = None
+        if instance.product.image:
+            representation['product']['image'] = str(HOST_URL) + instance.product.image.url
         
-        if colors:
-            """
-            if the product has colors, we add the colors to the representation
-            """
-            representation['product']['colors'] = []
-            for color in colors:
-                representation['colors'].append(
-                    {
-                        "color": color
-                    }
-                )
-        else:
-            representation['product']['colors'] = []
-
         return representation
+
+
+class CartSerializer(serializers.ModelSerializer):
+    items = CartItemSerializer(many=True, read_only=True)
+    class Meta:
+        model = Cart
+        # fields = "__all__"
+        exclude = ['customer', 'created', 'modified',]
+        depth = 1
+
+
+    

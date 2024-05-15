@@ -17,3 +17,10 @@ def cancel_order_when_product_is_deleted(sender, instance, created, **kwargs):
     except Exception as e:
         print(e)
 
+
+
+# @receiver(post_save, sender=Order)
+# def delete_cart_items_after_order_is_created(sender, instance, created, **kwargs):
+#     if created:
+#         instance.cart.delete()
+        # 

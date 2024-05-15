@@ -8,6 +8,9 @@ router = DefaultRouter()
 
 router.register(r"^profiles", views.MerchantProfileViewSet, basename="profiles")
 
+
+router.register(r"^all", views.MerchantViewSet, basename="merchants")
+
 urlpatterns = [
     path("", include(router.urls)),
     path("signup/", views.MerchantSignupView.as_view(), name="signup"),

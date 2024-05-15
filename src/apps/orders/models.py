@@ -10,6 +10,9 @@ from apps.products.models import Product
 
 from apps.carts.models import Cart
 
+from django.db.models import Sum
+
+
 
 class Order(TimeStampedModel):
     
@@ -36,7 +39,7 @@ class Order(TimeStampedModel):
 
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     
-    cart = models.ForeignKey(Cart, on_delete=models.DO_NOTHING, related_name="orders", null=True, blank=True, db_index=True)
+    cart = models.ForeignKey(Cart, on_delete=models.SET_NULL, related_name="orders", null=True, blank=True, db_index=True,)
     
     shipping_address = models.TextField(null=True, blank=True,)
 
@@ -76,9 +79,10 @@ class Order(TimeStampedModel):
 
 
     def save(self, **kwargs):
-        # if order.cart has Order Items update total_price
-        if self.cart:
-            self.total_price = sum([order_item.sub_total_price for order_item in OrderItem.objects.filter(order=self)])
+        if self.cart:  # Calculate total price only if cart is present
+            # Using aggregation to calculate total price at the database level
+            total_price = OrderItem.objects.filter(order=self).aggregate(total_price=Sum('sub_total_price'))['total_price']
+            self.total_price = total_price if total_price else 0.00
 
         if not self.shipping_address:
             if self.customer.address:
@@ -90,7 +94,7 @@ class Order(TimeStampedModel):
 
 
 class OrderItem(TimeStampedModel):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_items")
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_items", db_index=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="order_items")
     quantity = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
     sub_total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)

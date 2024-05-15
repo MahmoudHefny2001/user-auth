@@ -10,7 +10,12 @@ router.register(r"customer-orders", views.OrderViewSetForCustomers, basename="cu
 
 router.register(r"merchant-orders", views.OrderViewSetForMerchants, basename="merchant-orders")
 
+router.register(r"single-product-order", views.SingleProductOrderView, basename="single-product-order")
+
+
 urlpatterns = [
     path("", include(router.urls)),
-    
+
+    path("order-item-cancellation/<int:pk>/", views.OrderItemCancellationView.as_view(), name="order-item-cancellation"),
+
 ]

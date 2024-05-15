@@ -4,7 +4,7 @@ from .models import Product, Category, ProductAttachment
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'quantity', 'category', 'available', 'on_sale', 'sale_percent', 'price_after_sale', 'average_rating', 'merchant']
+    list_display = ['id', 'name', 'price', 'quantity', 'category', 'available', 'on_sale', 'sale_percent', 'price_after_sale', 'average_rating', 'merchant']
     search_fields = ['name', 'category__name', 'merchant__name']
     list_filter = ['category', 'available', 'on_sale', 'merchant']
     list_editable = ['price', 'quantity', 'available', 'on_sale', 'sale_percent', 'price_after_sale', 'merchant']

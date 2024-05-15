@@ -6,13 +6,17 @@ from .models import Order, OrderItem
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        exclude = ["order", 'modified']
+        exclude = ["order", 'modified', 'created']
     
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['product'] = {
+            "id": instance.product.id,
             "name": instance.product.name,
             "price": instance.product.price,
+            "merchant": {
+                "business_name": instance.product.merchant.full_name,
+            }
         }
 
         try:
@@ -28,6 +32,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
             representation['product']['image'] = None
     
         return representation
+
 
 class OrderSerializer(serializers.ModelSerializer):
     customer = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -54,6 +59,7 @@ class OrderSerializer(serializers.ModelSerializer):
         return representation
 
 
+
 class OrderSerializerForMerchants(serializers.ModelSerializer):
     customer = serializers.PrimaryKeyRelatedField(read_only=True)
     
@@ -70,8 +76,9 @@ class OrderSerializerForMerchants(serializers.ModelSerializer):
         
         order_items = []
         try:
-            merchant = self.context['request'].user.merchant
             try:
+                # Retrieve merchant from the context
+                merchant = self.context.get('request').user.merchant
                 order_items = OrderItem.objects.filter(order=instance, product__merchant=merchant)
             except Exception as e:
                 print("Error: ", e) 
@@ -80,18 +87,25 @@ class OrderSerializerForMerchants(serializers.ModelSerializer):
             order_items = None
         if order_items:
             representation['items'] = OrderItemSerializer(order_items, many=True).data
-        
+            # delete the merchant from the product 
+            for item in representation['items']:
+                del item['product']['merchant']
+
         
         representation['total_price'] = sum([order_item.sub_total_price for order_item in order_items])
         
         
 
         representation['customer'] = {
-            "id": instance.customer.id,
             "full_name": instance.customer.full_name,
             "phone_number": instance.customer.phone_number,
             "address": instance.customer.address,
         }
+
+
+        del representation['cart']
+
+
 
         return representation
     

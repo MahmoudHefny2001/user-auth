@@ -48,6 +48,7 @@ class MerchantSerializer(serializers.ModelSerializer):
 
 
 
+
 class MerchantProfileSerializer(serializers.ModelSerializer):
     merchant = MerchantSerializer(read_only=True)
     class Meta:
@@ -70,3 +71,45 @@ class MerchantProfileSerializer(serializers.ModelSerializer):
             "merchant_zip_code", 
         ]
     
+
+
+
+class MerchantSerializerForCustomers(serializers.ModelSerializer):
+    class Meta:
+        model = Merchant
+        fields = [
+            "full_name",
+            "address",
+            "payment_information",
+            "terms_agreement",
+        ]
+        
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["business_name"] = representation["full_name"]
+        del representation["full_name"]
+        return representation
+
+
+class MerchantProfileSerializerForCustomers(serializers.ModelSerializer):
+    merchant = MerchantSerializerForCustomers(read_only=True)
+    class Meta:
+        model = MerchantProfile
+        fields = [
+            "id",
+            "logo",
+            "image", 
+            "tax_id",
+            "merchant",
+            "about_us",
+            "twitter_url",
+            "website_url",
+            "facebook_url",
+            "linkedin_url",
+            "return_policy",
+            "instagram_url",
+            "shipping_address",
+            "shipping_options",
+            "merchant_zip_code", 
+        ]
+        

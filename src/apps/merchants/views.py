@@ -19,8 +19,19 @@ from apps.users.customJWT import CustomJWTAuthenticationClass
 from apps.users.authentication import CustomUserAuthenticationBackend
 
 
+from rest_framework import filters
+
 import jwt
 from django.conf import settings
+
+
+import threading
+
+from .mail import send_reset_password_email
+
+from .filters import MerchantProfileFilter
+
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class MerchantSignupView(APIView):
@@ -64,28 +75,36 @@ class MerchantLoginView(APIView):
     throttle_classes = [UserRateThrottle, AnonRateThrottle]
 
     def post(self, request, *args, **kwargs):
-        
-        email_or_phone = request.data.get("email_or_phone",)
-        password = request.data.get("password",)
+        try:
+            email_or_phone = request.data.get("email_or_phone",)
+            password = request.data.get("password",)
 
-        if email_or_phone is None or password is None:
-            return Response({'error': 'Please provide both email/phone and password'}, status=status.HTTP_400_BAD_REQUEST)    
+            if email_or_phone is None or password is None:
+                return Response({'error': 'Please provide both email/phone and password'}, status=status.HTTP_400_BAD_REQUEST)    
 
-        user = CustomUserAuthenticationBackend().authenticate(request, username=email_or_phone, password=password)
-        
-        merchant = Merchant.objects.get(email=user.email) 
+            user = CustomUserAuthenticationBackend().authenticate(request, username=email_or_phone, password=password)
+            
+            merchant = Merchant.objects.get(email=user.email)
 
-        if merchant and merchant.role == Merchant.Role.MERCHANT:
-            refresh = RefreshToken.for_user(merchant)
+            if merchant and merchant.role == Merchant.Role.MERCHANT:
+                refresh = RefreshToken.for_user(merchant)
+                return Response({
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                    'merchant': serializers.MerchantSerializer(merchant).data
+                },
+                status=status.HTTP_200_OK
+                )
+            
             return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-                'merchant': serializers.MerchantSerializer(merchant).data
-            },
-            status=status.HTTP_200_OK
+                "error": "Invalid Credentials",
+                },
+                status=status.HTTP_400_BAD_REQUEST
             )
-        return Response({
-            "error": "Invalid Credentials",
+
+        except Exception as e:
+            return Response({
+                "error": "You are not a merchant or invalid credentials."
             },
             status=status.HTTP_400_BAD_REQUEST
         )
@@ -245,11 +264,6 @@ class MerchantTokenRefreshView(TokenRefreshView):
 
 
 
-
-import threading
-
-from .mail import send_reset_password_email
-
 class MerchantPasswordResetMailView(APIView):
 
     permission_classes = [permissions.AllowAny,]
@@ -342,3 +356,22 @@ class MerchantDeleteView(APIView):
             user.delete()
             return Response({'success': 'Account deleted successfully'}, status=status.HTTP_200_OK)
         
+
+
+
+
+class MerchantViewSet(viewsets.ModelViewSet):
+    queryset = MerchantProfile.objects.all().order_by("-id")
+    serializer_class = serializers.MerchantProfileSerializerForCustomers
+    permission_classes = [permissions.AllowAny,]
+    http_method_names = ["get",]
+    throttle_classes = [UserRateThrottle, AnonRateThrottle]
+
+
+    filterset_class = MerchantProfileFilter
+
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+
+
+    search_fields = ['merchant__full_name', 'merchant__email', 'merchant__phone_number', 'merchant__address', 'merchant__payment_information', 'merchant__terms_agreement', 'merchant__role', 'merchant_zip_code', 'tax_id', 'shipping_address', 'shipping_options', 'website_url', 'facebook_url', 'twitter_url', 'instagram_url', 'linkedin_url', 'about_us', 'return_policy',]
+    

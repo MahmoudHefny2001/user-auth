@@ -4,8 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
-from .serializers import CartSerializer
-from .models import Cart
+from .serializers import CartSerializer, CartItemSerializer
+from .models import Cart, CartItem
 
 from apps.products.models import Product
 
@@ -15,136 +15,59 @@ from apps.users.customJWT import CustomJWTAuthenticationClass
 
 
 class CartViewSet(viewsets.ModelViewSet):
-    queryset = Cart.objects.all()
+    queryset = CartItem.objects.all()
     permission_classes = [IsAuthenticated,]
     authentication_classes = [CustomJWTAuthenticationClass, JWTAuthentication,]
-    serializer_class = CartSerializer
+    serializer_class = CartItemSerializer
 
     throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
 
-
-    http_method_names   = ['get','delete', 'post', 'patch',]
+    http_method_names   = ['get','delete', 'post', 'patch', 'put']
     
     def get_queryset(self):
-        customer = None
-        try:
-            customer = self.request.user.customer
-        except AttributeError:
-            return self.queryset.none()
-            
-        if customer:
-            return self.queryset.filter(customer=customer)
-        
+        return CartItem.objects.filter(cart__customer=self.request.user.customer)
+
+
     def create(self, request, *args, **kwargs):
-        item_quantity = request.data.get('item_quantity', None)
 
-        try:
-            product = Product.objects.get(id=request.data.get('product_id'))
-            customer = Customer.objects.get(id=request.user.customer.id)
+        if not request.data.get("product_id"):
+            return Response({"error": "Product ID is required"}, status=400)
 
-        except Product.DoesNotExist:
-            return Response(
-                {
-                    "message": "Product not found.",
-                },
-                status=400
-            )
 
-        # Check if the user adding the product to the cart didn't add it before
-        if Cart.objects.filter(customer=customer, product=product).exists():
-            return Response(
-                {
-                    "message": "Product already added to cart.",
-                    
-                },
-                status=400
-            )
-
-        if product and customer:
-            cart_product = Cart.objects.create(customer=customer, product=product, item_quantity=item_quantity)
-            cart_product.save()
-            return Response(
-                {
-                    "message": "Product added to cart successfully.",
-                    
-                },
-                status=201
-            )
-        else:
-            return Response(
-                {
-                    "message": "Product id is required."
-                },
-                status=400
-            )
+        product = Product.objects.get(id=request.data.get("product_id"))
         
+        cart = Cart.objects.filter(customer=request.user.customer).first()
 
-    def delete(self, request, *args, **kwargs):
+        quantity = request.data.get("quantity", 1)
 
-        """
-        We can delete from the cart by sending the product id in the request body.
-        Also we can delete from cart by sending the cart object id itself but here we go along with the product id.
-        """
+        # if the product is already in the cart, return an error
+        if cart and CartItem.objects.filter(cart=cart, product=product).exists():
+            return Response({"error": "Product already in cart"}, status=400)
 
-        try:
-
-            product = Product.objects.get(id=request.data.get('product_id'))
-            customer = Customer.objects.get(id=request.user.customer.id)
+        if not cart:
+            cart = Cart.objects.create(customer=request.user.customer)
         
-        except Product.DoesNotExist:
-            return Response(
-                {
-                    "message": "Product not found.",
-                },
-                status=400
-            )
+        
+        cart_item = CartItem.objects.create(cart=cart, product=product, item_quantity=quantity)
 
-        if not Cart.objects.filter(customer=customer, product=product).exists():
-            return Response(
-                {
-                    "message": "Product not found in cart.",
-                    
-                },
-                status=400
-            )
+        serializer = CartItemSerializer(cart_item)
 
-        if product and customer:
-            cart_product = Cart.objects.get(customer=customer, product=product)
-            cart_product.delete()
-            return Response(
-                {
-                    "message": "Product removed from cart successfully.",
-                    
-                },
-                status=200
-            )
-        else:
-            return Response(
-                {
-                    "message": "Product id is required."
-                },
-                status=400
-            )
+        return Response(serializer.data)
 
+    
 
+    def list(self, request, *args, **kwargs):
+        cart = Cart.objects.filter(customer=request.user.customer).first()
+        serializer = CartSerializer(cart)
+        return Response(serializer.data)
+    
+
+    
     def partial_update(self, request, *args, **kwargs):
-        item_quantity = request.data.get('item_quantity')
-
-        if not item_quantity:
-            return Response(
-                {
-                    "message": "Item quantity is required."
-                },
-                status=400
-            )
-
-        cart = self.get_object()
-        cart.item_quantity = item_quantity
-        cart.save()
-        return Response(
-            {
-                "message": "Cart updated successfully.",
-                
-            },
-            status=200
-        )
+        cart_item = self.get_object()
+        quantity = request.data.get("quantity", 1)
+        cart_item.item_quantity = quantity
+        cart_item.save()
+        serializer = CartItemSerializer(cart_item)
+        return Response(serializer.data)
+    

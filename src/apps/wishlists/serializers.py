@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Wishlist
+from .models import Wishlist, WishlistItem
 
 class WishListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,8 +8,15 @@ class WishListSerializer(serializers.ModelSerializer):
         # fields = "__all__"
         exclude = ['customer', 'modified', 'created']
         depth = 1
-        read_only_fields = ['product', 'category',]
 
+
+
+class WishListItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WishlistItem
+        exclude = ['wishlist', 'modified', 'created']
+        depth = 1
+    
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

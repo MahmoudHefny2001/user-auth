@@ -22,6 +22,8 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 import jwt
 
+import threading
+
 from django.conf import settings
 
 from .mail import send_reset_password_email
@@ -175,8 +177,6 @@ class CustomerTokenRefreshView(TokenRefreshView):
         return Response({'error': 'Invalid token'}, status=400)
     
 
-
-import threading
 
 class CustomerPasswordResetView(APIView):
 

@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
-from .models import Wishlist
+from .models import Wishlist, WishlistItem
 
-from .serializers import WishListSerializer
+from .serializers import WishListSerializer, WishListItemSerializer
 
 from apps.products.models import Product
 
@@ -15,10 +15,10 @@ from apps.users.customJWT import CustomJWTAuthenticationClass
 
 
 class WishListViewSet(viewsets.ModelViewSet):
-    queryset = Wishlist.objects.filter()
+    queryset = WishlistItem.objects.filter()
     permission_classes = [IsAuthenticated,]
     authentication_classes = [CustomJWTAuthenticationClass, JWTAuthentication,]
-    serializer_class = WishListSerializer
+    serializer_class = WishListItemSerializer
 
     throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
 
@@ -33,7 +33,7 @@ class WishListViewSet(viewsets.ModelViewSet):
             return self.queryset.none()
             
         if customer:
-            return self.queryset.filter(customer=customer)
+            return self.queryset.filter(wishlist__customer=customer)
     
 
     def create(self, request, *args, **kwargs):
@@ -50,7 +50,7 @@ class WishListViewSet(viewsets.ModelViewSet):
             )
 
         # Check if the user adding the product to the wishlist didn't add it before
-        if Wishlist.objects.filter(customer=customer, product=product).exists():
+        if WishlistItem.objects.filter(wishlist__customer=customer, product=product).exists():
             return Response(
                 {
                     "message": "Product already added to wishlist.",
@@ -60,8 +60,18 @@ class WishListViewSet(viewsets.ModelViewSet):
             )
 
         if product and customer:
-            whishlist_product = Wishlist.objects.create(customer=customer, product=product)
-            whishlist_product.save()
+            # if customer has no wishlist create it else retreive it then add items to wishlistitmes
+            if Wishlist.objects.filter(customer=customer).exists():
+                wishlist = Wishlist.objects.get(customer=customer)
+                wishlist_product = WishlistItem.objects.create(wishlist=wishlist, product=product)
+                wishlist.save()
+                wishlist_product.save()
+            else:
+                wishlist = Wishlist.objects.create(customer=customer)
+                wishlist_product = WishlistItem.objects.create(wishlist=wishlist, product=product)
+                wishlist.save()
+                wishlist_product.save()
+    
             return Response(
                 {
                     "message": "Product added to wishlist successfully.",
@@ -69,6 +79,7 @@ class WishListViewSet(viewsets.ModelViewSet):
                 },
                 status=201
             )
+
         else:
             return Response(
                 {
@@ -97,7 +108,7 @@ class WishListViewSet(viewsets.ModelViewSet):
                 status=400
             )
 
-        if not Wishlist.objects.filter(customer=customer, product=product).exists():
+        if not WishlistItem.objects.filter(wishlist__customer=customer, product=product).exists():
             return Response(
                 {
                     "message": "Product not found in wishlist.",
@@ -107,8 +118,11 @@ class WishListViewSet(viewsets.ModelViewSet):
             )
 
         if product and customer:
-            whishlist_product = Wishlist.objects.get(customer=customer, product=product)
-            whishlist_product.delete()
+            wishlist = Wishlist.objects.get(customer=customer)
+            wishlist_product = WishlistItem.objects.get(wishlist=wishlist, product=product)
+            wishlist_product.delete()
+            wishlist.save()
+
             return Response(
                 {
                     "message": "Product removed from wishlist successfully.",
