@@ -68,11 +68,14 @@ class CustomerLoginView(APIView):
 
         customer = CustomUserAuthenticationBackend().authenticate(request, username=email_or_phone, password=password)
 
+        customer_profile = None
+        
         try:
-            customer_profile = CustomerProfile.objects.get(customer=customer)
+            if customer:
+                customer_profile = CustomerProfile.objects.get(customer=customer)
         except CustomerProfile.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
+        
         if customer and customer.role == Customer.Role.CUSTOMER:
             refresh = RefreshToken.for_user(customer)
             return Response({
