@@ -21,6 +21,10 @@ from django.db import transaction
 
 import threading
 
+from django.db.models import F, Sum, Case, When, IntegerField, Value, BooleanField
+
+from django.db import models
+
 
 
 class OrderViewSetForCustomers(viewsets.ModelViewSet):
@@ -156,23 +160,39 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
             return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
         
 
+        
         with transaction.atomic():
-            order_items = OrderItem.objects.filter(order=instance)
-
-            for order_item in order_items:
-                
-                product = order_item.product
-                
-                product.quantity += order_item.quantity
-                
-                if product.quantity > 0:
-                    product.available = True
-                
-                product.save()
-
-                order_item.delete()
+            order_items = OrderItem.objects.filter(order=instance).select_related('product')
             
+            # Collect product IDs and their corresponding quantities
+            product_quantity_map = {}
+            for order_item in order_items:
+                # getting the product id and quantity of the order item
+                product_id = order_item.product_id
+                quantity = order_item.quantity
+                
+                # updating the product quantity in the product_quantity_map
+                if product_id in product_quantity_map:
+                    # if the product id is already in the map, add the quantity to the existing quantity
+                    product_quantity_map[product_id] += quantity
+                else:
+                    # if the product id is not in the map, add the product id and quantity to the map
+                    product_quantity_map[product_id] = quantity
 
+            # Update product quantities and availability
+            for product_id, quantity_increase in product_quantity_map.items():
+                Product.objects.filter(pk=product_id).update(
+                    quantity=F('quantity') + quantity_increase,
+                    available=Case(
+                        When(quantity__gt=0, then=Value(True)),
+                        default=Value(False),
+                        output_field=BooleanField()
+                    )
+                )
+                                
+            # Delete order items
+            order_items.delete()
+            
             self.perform_destroy(instance)
         
         return Response(status=status.HTTP_204_NO_CONTENT)
