@@ -12,10 +12,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 from apps.merchants.models import Merchant
 
-from .serializers import ProductAttachmentSerializer
-
-from apps.reviews.models import ProductReview
-
 class Category(TimeStampedModel):
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
@@ -54,6 +50,7 @@ class Product(TimeStampedModel):
 
 
     def get_reviews(self):
+        from apps.reviews.models import ProductReview
         # return json serializable reviews
         reviews = []
         for review in ProductReview.objects.filter(product=self):
@@ -71,6 +68,7 @@ class Product(TimeStampedModel):
 
     
     def get_attachments(self):
+        from .serializers import ProductAttachmentSerializer
         return ProductAttachmentSerializer(ProductAttachment.objects.filter(product=self), many=True).data
     
     
