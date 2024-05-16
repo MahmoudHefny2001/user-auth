@@ -37,9 +37,9 @@ class Cart(TimeStampedModel):
 
 
 class CartItem(TimeStampedModel):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="items", db_index=True)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_items", db_index=True)
 
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="cart_items")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,)
 
     item_quantity = models.PositiveIntegerField(default=1, blank=True, null=True)
 
@@ -48,14 +48,14 @@ class CartItem(TimeStampedModel):
         verbose_name = "Cart Item"
         verbose_name_plural = "Cart Items"
         ordering = ["-created"]
-        # 
+        unique_together = ["cart", "product"]
         
 
     def __str__(self):
         return f"Cart Item {self.id}"
     
     
-    def total(self):
+    def get_sub_total(self):
         return self.product.price * self.item_quantity
     
     def save(self, **kwargs):

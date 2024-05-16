@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from .serializers import OrderSerializer, OrderSerializerForMerchants
 
 
-from apps.carts.models import Cart, CartItem
+from apps.carts.models import Cart
 from apps.products.models import Product
 
 from .models import Order, OrderItem
@@ -16,6 +16,11 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from .mail import send_customer_order_email, send_merchant_order_email
 
 from .tasks import update_product_quantity_and_availability, clear_cart
+
+from django.db import transaction
+
+import threading
+
 
 
 class OrderViewSetForCustomers(viewsets.ModelViewSet):
@@ -39,93 +44,85 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
         if customer:
 
             try:
-                return self.queryset.filter(customer=customer).exclude(status=Order.OrderStatus.CANCELED)
+                # if no order items are found, the queryset will be empty so return an empty queryset
+                if not OrderItem.objects.filter(order__customer=customer):
+                    return self.queryset.none()
+                # return OrderItem.objects.filter(order__customer=customer).values_list('order', flat=True)
+                return Order.objects.filter(order_items__order__customer=customer).distinct()
             except Exception as e:
                 print(e)
     
 
     def create(self, request, *args, **kwargs):
         
-        cart = None
-        
-        order = None
+        try:
+            customer = request.user.customer
 
-        shipping_address = None
+            if not customer:
+                return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
 
-        if not request.user.customer:
-            return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
+            cart = Cart.objects.prefetch_related('cart_items').get(customer=customer)
 
+            if not cart:
+                return Response({"error": "Your cart is empty. Add products to make an order or use your existing cart."}, status=status.HTTP_400_BAD_REQUEST)
 
-        customer = request.user.customer
-
-
-        cart = Cart.objects.get(customer=customer)
-        
-        if not cart:
-            return Response({"error": "Your cart is empty. Add products to make an order or use your existing cart."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-        if not customer.address:
             shipping_address = request.data.get("shipping_address")
 
-            if not shipping_address: 
-                return Response({"error": "You need to add your address to your profile or specify a shipping address before making an order"}, status=status.HTTP_400_BAD_REQUEST)
+            if not shipping_address:
+                if not customer.address:
+                    return Response({"error": "You need to add your address to your profile or specify a shipping address before making an order"}, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    shipping_address = customer.address
 
+            with transaction.atomic():
+                # Create the order
+                order = Order.objects.create(
+                    customer=customer,
+                    shipping_address=shipping_address,
+                    payment_method=request.data.get("payment_method", Order.PaymentMethod.CASH_ON_DELIVERY)
+                )
 
-        try:
-            order = Order.objects.create(
-                customer=request.user.customer,
-                shipping_address=shipping_address,
-                # if not provided, the default set it to be the default payment method, if sent, it will be the provided payment method
-                payment_method=request.data.get("payment_method", Order.PaymentMethod.CASH_ON_DELIVERY),
-            )
+                # Prepare a list of OrderItem objects to be created in bulk
+                order_items = []
+                total_price = 0  # Initialize total_price
 
-            order.save()
-
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
-        try:   
-            # Create Order Items based on the cart items
-            cart_items = CartItem.objects.filter(cart=cart)
-
-            for cart_item in cart_items:
-                try:
-                    order_item = OrderItem.objects.create(
-                        order=order,
-                        product=cart_item.product,  
+                for cart_item in cart.cart_items.all():
+                    sub_total_price = cart_item.get_sub_total()  # Calculate sub_total_price
+                    total_price += sub_total_price  # Add to total_price
+                    order_items.append(OrderItem(
+                        order=order,  # Set the order attribute
+                        product=cart_item.product,
                         quantity=cart_item.item_quantity,
-                        sub_total_price=cart_item.product.price * cart_item.item_quantity
-                    )
-                    order_item.save()
-                except Exception as e:
-                    return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-        try:
-            order.total_price = sum([order_item.sub_total_price for order_item in OrderItem.objects.filter(order=order)])
-            order.save()
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                        sub_total_price=sub_total_price
+                    ))
 
-        try:
-            # Send emails to the merchant and the customer non-blocking using Celery
-            send_merchant_order_email(order,)
-            send_customer_order_email(order,)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-        try:
-            # Update the product quantity and availability and clear the cart
-            update_product_quantity_and_availability(order)
-            clear_cart(cart)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                # Bulk create OrderItems
+                OrderItem.objects.bulk_create(order_items)
 
-        return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+                # Set the total_price for the order
+                order.total_price = total_price
+                order.save()
+
+                # Other actions (sending emails, updating product quantity, clearing cart)
+                # Send emails to the merchant and the customer non-blocking using Celery with a new thread
+                thread1 = threading.Thread(target=send_merchant_order_email, args=(order,))
+                thread1.start()
+
+                thread2 = threading.Thread(target=send_customer_order_email, args=(order,))
+                thread2.start()
+                
+                thread3 = threading.Thread(target=update_product_quantity_and_availability, args=(order,))
+                thread3.start()
+                
+                thread4 = threading.Thread(target=clear_cart, args=(cart,))
+                thread4.start()
+
+                return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+
+        except Cart.DoesNotExist:
+            return Response({"error": "Your cart does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
     
@@ -158,23 +155,25 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
         if instance.customer != request.user.customer:
             return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
         
-        order_items = OrderItem.objects.filter(order=instance)
 
-        for order_item in order_items:
-            
-            product = order_item.product            
-            
-            product.quantity += order_item.quantity
-            
-            if product.quantity > 0:
-                product.available = True
-            
-            product.save()
+        with transaction.atomic():
+            order_items = OrderItem.objects.filter(order=instance)
 
-            order_item.delete()
-        
-        
-        self.perform_destroy(instance)
+            for order_item in order_items:
+                
+                product = order_item.product
+                
+                product.quantity += order_item.quantity
+                
+                if product.quantity > 0:
+                    product.available = True
+                
+                product.save()
+
+                order_item.delete()
+            
+
+            self.perform_destroy(instance)
         
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -250,37 +249,40 @@ class SingleProductOrderView(viewsets.ViewSet):
                 return Response({"error": "You need to add your address to your profile or specify a shipping address before making an order"}, status=status.HTTP_400_BAD_REQUEST)
             
 
-        order = Order.objects.create(
-            customer=customer,
-            total_price=product.price * quantity,
-            shipping_address=request.data.get("shipping_address", customer.address),
-            payment_method=request.data.get("payment_method", Order.PaymentMethod.CASH_ON_DELIVERY),
-        )
+        with transaction.atomic():
+            order = Order.objects.create(
+                customer=customer,
+                total_price=product.price * quantity,
+                shipping_address=request.data.get("shipping_address", customer.address),
+                payment_method=request.data.get("payment_method", Order.PaymentMethod.CASH_ON_DELIVERY),
+            )
 
-        order.save()
+            order.save()
 
-        order_item = OrderItem.objects.create(
-            order=order,
-            product=product,
-            quantity=quantity,
-            sub_total_price=product.price * quantity
-        )
+            order_item = OrderItem.objects.create(
+                order=order,
+                product=product,
+                quantity=quantity,
+                sub_total_price=product.price * quantity
+            )
 
-        order_item.save()
+            order_item.save()
 
-        product.quantity -= quantity
-        
-        if product.quantity <= 0:
-            product.available = False
+            product.quantity -= quantity
+            
+            if product.quantity <= 0:
+                product.available = False
 
-        product.save()
+            product.save()
 
-        try:
-            # Send emails to the merchant and the customer non-blocking using Celery
-            send_merchant_order_email(order,)
-            send_customer_order_email(order,)
-        except Exception as e:
-            pass
+            try:
+                # Send emails to the merchant and the customer non-blocking using Celery
+                thread1 = threading.Thread(target=send_merchant_order_email, args=(order,))
+                thread1.start()
+                thread2 = threading.Thread(target=send_customer_order_email, args=(order,))
+                thread2.start()
+            except Exception as e:
+                pass
 
         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
     
@@ -355,3 +357,6 @@ class OrderItemCancellationView(views.APIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"message": "The order item has been canceled successfully"}, status=status.HTTP_200_OK)
+
+
+

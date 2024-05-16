@@ -48,10 +48,13 @@ urlpatterns = [
     path("payments/", include("apps.payments.urls")), #
 
     path('api-documentation/', schema_view.with_ui('swagger', cache_timeout=0),name='schema-swagger-ui'), #
+    
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += [re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT})]
+
+urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
 
 
 if settings.DEBUG:

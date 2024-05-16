@@ -12,6 +12,9 @@ from apps.carts.models import Cart
 
 from django.db.models import Sum
 
+from django.db import transaction
+
+from decimal import Decimal
 
 
 class Order(TimeStampedModel):
@@ -91,11 +94,21 @@ class Order(TimeStampedModel):
         super().save(**kwargs)
         
 
+    
+    def calculate_total_price(self):
+        total_price = Decimal('0.00')  # Initialize total_price as Decimal
+        with transaction.atomic():
+            for order_item in self.order_items.all():
+                total_price += order_item.sub_total_price
+
+            self.total_price = total_price
+            self.save()
+
 
 
 class OrderItem(TimeStampedModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_items", db_index=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="order_items")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,)
     quantity = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
     sub_total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
@@ -104,54 +117,18 @@ class OrderItem(TimeStampedModel):
         verbose_name = "Order Item"
         verbose_name_plural = "Order Items"
         ordering = ["-created"]
-
+        unique_together = ["order", "product"]
     
     def save(self, **kwargs):
         self.sub_total_price = self.product.price * self.quantity
         super().save(**kwargs)
     
 
-        
-
-
-# class OrderRefund(TimeStampedModel):
-#     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="refund")
-#     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-#     reason = models.TextField()
-#     status = models.CharField(max_length=50, choices=Order.OrderStatus.choices, default=Order.OrderStatus.PENDING)
-#     notes = models.TextField(null=True, blank=True)
-#     customer = models.ForeignKey(Customer, on_delete=models.DO_NOTHING, related_name="order_refunds")
-#     complaint = models.TextField(null=True, blank=True)
-
-#     class Meta:
-#         db_table = "order_refunds"
-#         verbose_name = "Order Refund"
-#         verbose_name_plural = "Order Refunds"
-#         ordering = ["-created"]
-        
     
-
-
-# class OrderiItemReturn(TimeStampedModel):
-#     order_item = models.OneToOneField(OrderItem, on_delete=models.CASCADE, related_name="return")
-#     status = models.CharField(max_length=50, choices=Order.OrderStatus.choices, default=Order.OrderStatus.PENDING)
-#     notes = models.TextField(null=True, blank=True)
-#     customer = models.ForeignKey(Customer, on_delete=models.DO_NOTHING, related_name="order_returns")
-#     complaint = models.TextField(null=True, blank=True)
-      
-
-#     class Meta:
-#         db_table = "order_returns"
-#         verbose_name = "Order Return"
-#         verbose_name_plural = "Order Returns"
-#         ordering = ["-created"]
+    def get_sub_total_price(self):
+        return self.product.price * self.quantity
 
 
 
-# class OrderExchange(TimeStampedModel):
-#     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="exchange")
-#     status = models.CharField(max_length=50, choices=Order.OrderStatus.choices, default=Order.OrderStatus.PENDING)
-#     notes = models.TextField(null=True, blank=True)
-#     customer = models.ForeignKey(Customer, on_delete=models.DO_NOTHING, related_name="order_exchanges")
 
         

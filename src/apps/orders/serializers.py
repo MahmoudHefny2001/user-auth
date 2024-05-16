@@ -47,7 +47,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        
+      
         # check if there is products_ids in the request
         order_items = []
         try:

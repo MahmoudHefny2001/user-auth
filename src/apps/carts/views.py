@@ -55,11 +55,6 @@ class CartViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     
-
-    def list(self, request, *args, **kwargs):
-        cart = Cart.objects.filter(customer=request.user.customer).first()
-        serializer = CartSerializer(cart)
-        return Response(serializer.data)
     
 
     

@@ -16,6 +16,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+
         representation['product'] = {
             "id": instance.product.id,
             "name": instance.product.name,
@@ -55,4 +56,3 @@ class CartSerializer(serializers.ModelSerializer):
         depth = 1
 
 
-    
