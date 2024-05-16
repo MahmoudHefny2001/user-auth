@@ -31,7 +31,7 @@ class WishListItemSerializer(serializers.ModelSerializer):
 
         try:
             request = self.context.get('request')
-            representation['product']['image'] = request.build_absolute_uri(instance.product.image.url)
+            representation['product']['image'] = instance.product.image.url
         except Exception as e:
             representation['product']['image'] = None
             

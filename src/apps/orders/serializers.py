@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from .models import Order, OrderItem
 
+import os
+
 
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,8 +22,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
         }
 
         try:
-            import os
-            representation['product']['image'] = str(os.environ.get('HOST_URL') + instance.product.image.url)
+            # representation['product']['image'] = str(os.environ.get('HOST_URL') + instance.product.image.url)
+            representation['product']['image'] = instance.product.image.url 
         except FileNotFoundError:
             representation['product']['image'] = None
 

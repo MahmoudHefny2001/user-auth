@@ -8,7 +8,7 @@ from datetime import timedelta
 
 from dotenv import load_dotenv
 
-load_dotenv("environments/.env.local")
+load_dotenv("environments/.env.production")
 
 
 SECRET_KEY = os.environ.get("SECRET_KEY",)
