@@ -15,7 +15,7 @@ class CustomUserAuthenticationBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None, **kwargs):        
         try:
-            user = User.objects.select_related('email', 'phone_number').get(Q(email=username) | Q(phone_number=username))
+            user = User.objects.get(Q(email=username) | Q(phone_number=username))
         except User.DoesNotExist:
             return None
         else:
@@ -24,4 +24,3 @@ class CustomUserAuthenticationBackend(ModelBackend):
                     return user
             except Exception as e:
                 print(e)
-        return None
