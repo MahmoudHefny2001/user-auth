@@ -335,6 +335,7 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
         """
         
         product = self.get_object()
+        
         if product.merchant != request.user.merchant:
             return Response(
                 {
@@ -345,10 +346,24 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
         
         # delete related cart and orders and items realted to this product before deleteing the product itself
         from apps.orders.models import OrderItem, Order
-        from apps.carts.models import Cart
+        from apps.carts.models import Cart, CartItem
+
+        # Delete OrderItems related to the product
         OrderItem.objects.filter(product=product).delete()
-        Order.objects.filter(cart__product=product).delete()
-        Cart.objects.filter(product=product).delete()
+
+        # Delete CartItems related to the product
+        CartItem.objects.filter(product=product).delete()
+
+        # Find distinct carts that contain the product
+        cart_ids = Cart.objects.filter(cart_items__product=product).values_list('id', flat=True).distinct()
+
+        # Delete Orders associated with the carts
+        Order.objects.filter(cart_id__in=cart_ids).delete()
+
+        # Delete the carts themselves
+        Cart.objects.filter(id__in=cart_ids).delete()
+        
+        # Finally, delete the product
         product.delete()
 
         return Response(
