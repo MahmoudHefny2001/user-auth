@@ -1,8 +1,16 @@
 from rest_framework import serializers
 from .models import Customer, CustomerProfile
 
+from apps.users.validators import valid_password, valid_phone_number
 
 class CustomerSerializer(serializers.ModelSerializer):
+
+    password = serializers.CharField(write_only=True, required=True, validators=[valid_password])
+
+    email = serializers.EmailField(required=True)
+
+    phone_number = serializers.CharField(required=True, max_length=20, validators=[valid_phone_number])
+
     class Meta:
         model = Customer
         fields = [

@@ -17,6 +17,7 @@ class CustomerBridge(User):
 
     class Meta:
         proxy = True
+        app_label = "customers"
 
     objects = CustomerManager()    # Custom Manager for the Customer model used only to filter the admins.
 

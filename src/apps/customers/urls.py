@@ -13,25 +13,26 @@ router.register(r"^profiles", views.CustomerProfileViewSet, basename="profiles")
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("signup/", views.CustomerSignupView.as_view(), name="signup"),
-    path("login/", views.CustomerLoginView.as_view(), name="login"),
+    
+    path("signup/", views.CustomerSignupView.as_view(), name="customer_signup"),
 
-    path("logout/", views.CustomerLogOutView.as_view(), name="logout"),
+    path("login/", views.CustomerLoginView.as_view(), name="customer_login"),
 
-    path('token/refresh/', views.CustomerTokenRefreshView.as_view(), name='token_refresh'),
+    path("logout/", views.CustomerLogOutView.as_view(), name="customer_logout"),
 
-    path('password-update/', views.CustomerPasswordUpdateView.as_view(), name='password_update'),
+    path('token/refresh/', views.CustomerTokenRefreshView.as_view(), name='customer_token_refresh'),
 
-    path('account-delete/', views.CustomerDeleteView.as_view(), name='account_delete'),
+    path('password-update/', views.CustomerPasswordUpdateView.as_view(), name='customer_password_update'),
+
+    path('account-delete/', views.CustomerDeleteView.as_view(), name='customer_account_delete'),
 
 
-    path('password-reset-mail/', views.CustomerPasswordResetView.as_view(), name='password_reset_mail'),
-    path('password-update-mail/', views.CustomerPasswordUpdateMailView.as_view(), name='password_reset'),
+    path('password-reset-mail/', views.CustomerPasswordResetView.as_view(), name='customer_password_reset_mail'),
+    path('password-update-mail/', views.CustomerPasswordUpdateMailView.as_view(), name='customer_password_reset'),
 
     # path('confirm-email/', views.CustomerEmailVerificationView.as_view(), name='email_verification'),
 
     # path('google-login/', views.GoogleSocialLoginView.as_view()),
     # path('google-signup/', views.GoogleSocialSignupView.as_view()),
-
 
 ]

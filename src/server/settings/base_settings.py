@@ -8,9 +8,9 @@ from datetime import timedelta
 
 from dotenv import load_dotenv
 
-load_dotenv("environments/.env.production")
+# load_dotenv("environments/.env.production")
 
-# load_dotenv("environments/.env.local")
+load_dotenv("environments/.env.local")
 
 
 

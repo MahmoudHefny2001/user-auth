@@ -63,7 +63,7 @@ class CustomerLoginView(APIView):
         email_or_phone = request.data.get("email_or_phone",)
         password = request.data.get("password",)
 
-        if email_or_phone is None or password is None:
+        if not(email_or_phone or password):
             return Response({'error': 'Please provide both email/phone and password'}, status=status.HTTP_400_BAD_REQUEST)    
 
         customer = CustomUserAuthenticationBackend().authenticate(request, username=email_or_phone, password=password)
