@@ -2,15 +2,11 @@ from django.db import models
 
 from django_extensions.db.models import TimeStampedModel
 
-from django.conf import settings
-
 from decimal import Decimal
 
-from django.contrib.postgres.fields import ArrayField
-
-from django.core.validators import MinValueValidator, MaxValueValidator
-
 from apps.merchants.models import Merchant
+
+import uuid
 
 class Category(TimeStampedModel):
     name = models.CharField(max_length=255)
@@ -27,26 +23,31 @@ class Category(TimeStampedModel):
 
 class Product(TimeStampedModel):
 
-    bar_code = models.CharField(max_length=255, null=True, blank=True, unique=True, db_index=True)
+    bar_code = models.CharField(max_length=255, null=True, blank=True, unique=True, db_index=True,)
 
     name = models.CharField(max_length=255)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    quantity = models.IntegerField()
-    image = models.ImageField(upload_to="images/products/", null=True, blank=True, default=None, max_length=400)
     
-    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name="products", null=True, blank=True, default=None)
+    description = models.TextField()
+    
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    quantity = models.IntegerField()
+
+    image = models.ImageField(upload_to="images/products/", null=True, blank=True, max_length=500)
+    
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name="products", null=True, blank=True)
 
     available = models.BooleanField(default=True, null=True, blank=True)
-    on_sale = models.BooleanField(default=False, null=True, blank=True)
-    sale_percent = models.IntegerField(default=0, null=True, blank=True)
+    
+    on_sale = models.BooleanField(null=True, blank=True)
+    
+    sale_percent = models.IntegerField(null=True, blank=True)
+    
     price_after_sale = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
-
-    average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0, null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    average_rating = models.DecimalField(max_digits=2, decimal_places=1, null=True, blank=True,)
     
-
-    merchant = models.ForeignKey(Merchant, on_delete=models.DO_NOTHING, related_name="products", null=True, blank=True, default=None)
+    merchant = models.ForeignKey(Merchant, on_delete=models.SET_NULL, related_name="products", null=True, blank=True)
 
 
     def get_reviews(self):
@@ -81,11 +82,10 @@ class Product(TimeStampedModel):
     def save(self, **kwargs):
         if self.on_sale:
             self.price_after_sale = self.price - (self.price * Decimal(self.sale_percent) / 100)
-        else:
-            self.on_sale = False
-            self.price_after_sale = self.price
-            self.sale_percent = 0
-            
+
+        if not self.bar_code:
+            self.bar_code = uuid.uuid4().hex[:10].upper()
+
         super(Product, self).save(**kwargs)
 
 
@@ -97,14 +97,6 @@ class Product(TimeStampedModel):
         verbose_name = "Product"
         verbose_name_plural = "Products"
         ordering = ["-created"]
-        
-    
-    def get_image_url(self):
-        # return the full http url of the image
-        if self.image:
-            # return f"{settings.HOST_URL}{self.image.url}"
-            return self.image.url
-        return None
 
 
 
@@ -132,7 +124,6 @@ class ProductAttachment(TimeStampedModel):
 
 
 class ProductColor(models.Model):
-    # id bigint
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="colors", null=False, blank=False,) # bigint
     color = models.CharField(max_length=255, null=False, blank=False,)
     
@@ -144,3 +135,4 @@ class ProductColor(models.Model):
         verbose_name = "Product Color"
         verbose_name_plural = "Product Colors"
         unique_together = ('product', 'color')
+    

@@ -95,8 +95,6 @@ AUTHENTICATION_BACKENDS += [
 
 
 
-
-
 DATABASES = {
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',

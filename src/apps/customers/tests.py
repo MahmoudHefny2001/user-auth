@@ -42,11 +42,11 @@ class CustomerSignupTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
-        self.assertIn('email', response.data)
-        self.assertIn('full_name', response.data)
-        self.assertIn('phone_number', response.data)
+        self.assertIn('email', response.data['error'])
+        self.assertIn('full_name', response.data['error'])
+        self.assertIn('phone_number', response.data['error'])
         
-        self.assertIn('password', response.data) 
+        self.assertIn('password', response.data['error']) 
 
 
     def test_customer_signup_missing_data(self):
@@ -62,9 +62,9 @@ class CustomerSignupTest(APITestCase):
         
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
-        self.assertIn('email', response.data)
-        self.assertIn('phone_number', response.data)
-        self.assertIn('password', response.data)
+        self.assertIn('email', response.data['error'])
+        self.assertIn('phone_number', response.data['error'])
+        self.assertIn('password', response.data['error'])
 
 
 

@@ -51,7 +51,7 @@ class GetProductsSerializer(serializers.ModelSerializer):
             if the product is on sale, we add the sale percent to the representation 
             the sale percent is a string and it is the percentage of the sale
             """
-            representation['sale_percent'] = str(int(instance.sale_percent)) + '%'
+            representation['sale_percent'] = str(int(instance.sale_percent))
 
 
         if not instance.image or instance.image == 'null':
@@ -134,7 +134,7 @@ class RetrieveProductsSerializer(serializers.ModelSerializer):
             representation['on_sale'] = False
 
         if instance.sale_percent:
-            representation['sale_percent'] = str(int(instance.sale_percent)) + '%'
+            representation['sale_percent'] = str(int(instance.sale_percent))
         representation['images'] = instance.get_attachments()
 
         representation['average_rating'] = instance.average_rating
@@ -201,7 +201,7 @@ class GetProductsSerializerForMerchants(serializers.ModelSerializer):
         representation['average_rating'] = instance.average_rating
 
         if instance.sale_percent:
-            representation['sale_percent'] = str(int(instance.sale_percent)) + '%'
+            representation['sale_percent'] = str(int(instance.sale_percent))
         
         
         return representation

@@ -13,7 +13,7 @@ class CustomUserAuthenticationBackend(ModelBackend):
     not only username and password.
     """
 
-    def authenticate(self, request, username=None, password=None, **kwargs):        
+    def authenticate(self, request, username=None, password=None, **kwargs):
         try:
             user = User.objects.get(Q(email=username) | Q(phone_number=username))
         except User.DoesNotExist:

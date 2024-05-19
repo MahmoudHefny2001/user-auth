@@ -4,12 +4,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
-from .serializers import CartSerializer, CartItemSerializer
+from .serializers import CartItemSerializer
 from .models import Cart, CartItem
 
 from apps.products.models import Product
 
-from apps.customers.models import Customer
 
 from apps.users.customJWT import CustomJWTAuthenticationClass
 
@@ -33,9 +32,10 @@ class CartViewSet(viewsets.ModelViewSet):
         if not request.data.get("product_id"):
             return Response({"error": "Product ID is required"}, status=400)
 
-
-        product = Product.objects.get(id=request.data.get("product_id"))
-        
+        try:
+            product = Product.objects.get(id=request.data.get("product_id"))
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=404)
         cart = Cart.objects.filter(customer=request.user.customer).first()
 
         quantity = request.data.get("quantity", 1)
@@ -55,9 +55,6 @@ class CartViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     
-    
-
-    
     def partial_update(self, request, *args, **kwargs):
         cart_item = self.get_object()
         quantity = request.data.get("quantity", 1)
@@ -65,4 +62,20 @@ class CartViewSet(viewsets.ModelViewSet):
         cart_item.save()
         serializer = CartItemSerializer(cart_item)
         return Response(serializer.data)
+
+
+
+class ClearCartViewSet(viewsets.ViewSet):
+    queryset = CartItem.objects.all()
+    permission_classes = [IsAuthenticated,]
+    authentication_classes = [CustomJWTAuthenticationClass, JWTAuthentication,]
+    throttle_classes = [AnonRateThrottle, UserRateThrottle,]
+
+    http_method_names = ['post',]
+
+    def create(self, request):
+        cart = Cart.objects.filter(customer=request.user.customer).first()
+        if cart:
+            cart.cart_items.all().delete()
+        return Response({"message": "Cart cleared successfully"}, status=200)
     

@@ -1,7 +1,10 @@
 from rest_framework import viewsets, views
 from .models import Product, Category, ProductAttachment
-from .serializers import GetProductsSerializer, RetrieveProductsSerializer, GetProductsSerializerForMerchants, RetrieveProductsSerializerForMerchants, CategorySerializer
-
+from .serializers import (
+    GetProductsSerializer, RetrieveProductsSerializer, 
+    GetProductsSerializerForMerchants, RetrieveProductsSerializerForMerchants, 
+    CategorySerializer
+)
 from rest_framework.permissions import AllowAny
 
 from rest_framework.response import Response
@@ -18,7 +21,7 @@ from apps.users.customJWT import CustomJWTAuthenticationClass
 
 from rest_framework.permissions import IsAuthenticated
 
-# from .permissions import IsMerchant
+from decimal import Decimal
 
 
 
@@ -41,8 +44,6 @@ class CategoryViewSet(views.APIView):
                 # "categories": CategorySerializer(categories, many=True).data
             }
         )
-
-
 
 
 
@@ -103,7 +104,6 @@ class HomeViewSet(views.APIView):
             }
         )
 
-    
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -147,12 +147,13 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
     Product ViewSet for Merchants.
     """
 
-
     queryset = Product.objects.all()
+
     permission_classes = [
         IsAuthenticated, 
         # IsMerchant,
-        ]
+    ]
+    
     authentication_classes = [CustomJWTAuthenticationClass, JWTAuthentication,]
 
     throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
@@ -160,15 +161,20 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
     http_method_names   = ['get', 'retrieve', 'post', 'patch', 'delete']
 
     filterset_class = ProductFilter
+    
     filter_backends = [SearchFilter, DjangoFilterBackend]
+    
     search_fields = ['id', 'name', 'category']
-
     
     def get_queryset(self):
         """
         This view should return a list of all the products that belong to the currently authenticated merchant.
         """
-        return Product.objects.filter(merchant=self.request.user).order_by('-created')
+        try:
+            return Product.objects.filter(merchant=self.request.user).order_by('-created')
+        except Exception as e:
+            return Response({"error": str(e)}, status=400)
+    
     
     def get_serializer_class(self):
         """
@@ -182,42 +188,57 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
             return RetrieveProductsSerializerForMerchants
     
 
+
     def create(self, request, *args, **kwargs):
         """
         This method is used to create a product for the currently authenticated merchant.
         """
-
-
-        try:
+        try:            
+                        
+            price = Decimal(request.data.get('price'))
+            quantity = int(request.data.get('quantity'))
+            on_sale = request.data.get('on_sale', None)
+            sale_percent = request.data.get('sale_percent', None)
             
+            if on_sale == 'true':
+                on_sale = True
+            else:
+                on_sale = False
+
+            if on_sale and sale_percent:
+                sale_percent = Decimal(sale_percent)
+
             try:
+
+                merchant = request.user.merchant
+
                 product = Product.objects.create(
+                    merchant=merchant,
                     bar_code=request.data.get('bar_code',),
-                    merchant=request.user.merchant,
                     name=request.data.get('name'),
                     description=request.data.get('description'),
-                    price=request.data.get('price'),
-                    quantity=request.data.get('quantity'),
+                    price=price,
+                    quantity=quantity,
                     category_id=request.data.get('category_id', None),
-                    on_sale=request.data.get('on_sale', None),
-                    sale_percent=request.data.get('sale_percent', None),
+                    on_sale=on_sale,
+                    sale_percent=sale_percent,
                     image=request.data.get('image',),
                 )
+
             except Exception as e:
                 return Response({"error": str(e)}, status=400)
 
             # colors=request.data.getlist('colors', None),
-            # if colors is not None and len(colors) > 0:
-                
-            #     from .models import ProductColor
-            #     for color in colors:
-            #         product_color = ProductColor.objects.create(
-            #             product=product,
-            #             color=color
-            #         )
-            #         product_color.save()
-            
+            # if colors:
+                # from .models import ProductColor
+                # for color in colors:
+                #     product_color = ProductColor.objects.create(
+                #         product=product,
+                #         color=color
+                #     )
+                        
             # Handle product attachmetns creation like adding multiple images
+
             attachments = request.FILES.getlist('attachments', None)
 
             if attachments:
@@ -226,15 +247,11 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
                         product=product,
                         attachment=attachment
                     )
-                
 
-
-            product.save()
             return Response(
                 {
                     "message": "Product created successfully.",
-                    "product": RetrieveProductsSerializer(product).data,
-                }, 
+                },
                 status=201
             )
         
@@ -374,4 +391,3 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
         )
         
         
-    

@@ -14,9 +14,9 @@ class MerchantBridge(User):
     Instead, it will be used on the Merchant table as a 'bridge - connector - pointer' to the users model.
     """
     base_role = User.Role.MERCHANT
-
     class Meta:
         proxy = True
+        app_label = "customers"
 
     objects = MerchantManager()    # Custom Manager for the Merchant model used only to filter the admins.
 

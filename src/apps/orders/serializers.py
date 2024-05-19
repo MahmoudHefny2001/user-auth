@@ -95,8 +95,6 @@ class OrderSerializerForMerchants(serializers.ModelSerializer):
 
         
         representation['total_price'] = sum([order_item.sub_total_price for order_item in order_items])
-        
-        
 
         representation['customer'] = {
             "full_name": instance.customer.full_name,
@@ -106,8 +104,6 @@ class OrderSerializerForMerchants(serializers.ModelSerializer):
 
 
         del representation['cart']
-
-
 
         return representation
     

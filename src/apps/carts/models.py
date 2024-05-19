@@ -20,19 +20,6 @@ class Cart(TimeStampedModel):
 
     def __str__(self):
         return f"Cart {self.id}"
-    
-
-    def get_items(self):
-        items = []
-        for cart_item in CartItem.objects.filter(cart=self):
-            items.append(
-                {
-                    "product": cart_item.product,
-                    "item_quantity": cart_item.item_quantity,
-                    "total": cart_item.total(),
-                }
-            )
-        return items
 
 
 

@@ -33,6 +33,9 @@ from .filters import MerchantProfileFilter
 
 from django_filters.rest_framework import DjangoFilterBackend
 
+from django.core.exceptions import ObjectDoesNotExist
+
+
 
 class MerchantSignupView(APIView):
     """
@@ -75,39 +78,38 @@ class MerchantLoginView(APIView):
     throttle_classes = [UserRateThrottle, AnonRateThrottle]
 
     def post(self, request, *args, **kwargs):
+        
         try:
-            email_or_phone = request.data.get("email_or_phone",)
-            password = request.data.get("password",)
+            email_or_phone = request.data.get("email_or_phone")
+            password = request.data.get("password")
 
-            if email_or_phone is None or password is None:
+            if not (email_or_phone or password):
                 return Response({'error': 'Please provide both email/phone and password'}, status=status.HTTP_400_BAD_REQUEST)    
 
             user = CustomUserAuthenticationBackend().authenticate(request, username=email_or_phone, password=password)
-            
-            merchant = Merchant.objects.get(email=user.email)
 
-            if merchant and merchant.role == Merchant.Role.MERCHANT:
+            merchant_profile = None
+            
+            if user is None:
+                return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                merchant = Merchant.objects.get(email=user.email)
+            except ObjectDoesNotExist:
+                return Response({'error': 'Merchant not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if merchant.role == Merchant.Role.MERCHANT:
                 refresh = RefreshToken.for_user(merchant)
                 return Response({
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
                     'merchant': serializers.MerchantSerializer(merchant).data
-                },
-                status=status.HTTP_200_OK
-                )
+                }, status=status.HTTP_200_OK)
             
-            return Response({
-                "error": "Invalid Credentials",
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
-            return Response({
-                "error": "You are not a merchant or invalid credentials."
-            },
-            status=status.HTTP_400_BAD_REQUEST
-        )
+            return Response({'error': 'You are not a merchant or invalid credentials.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
