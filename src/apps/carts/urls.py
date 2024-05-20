@@ -11,6 +11,7 @@ router.register(r"^my-cart", views.CartViewSet, basename="cart")
 router.register(r"^clear-cart", views.ClearCartViewSet, basename="clear-cart")
 
 urlpatterns = [
+    
     path("", include(router.urls)),
     
 ]

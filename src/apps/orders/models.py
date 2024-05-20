@@ -119,6 +119,11 @@ class OrderItem(TimeStampedModel):
         ordering = ["-created"]
         unique_together = ["order", "product"]
     
+
+    def __str__(self) -> str:
+        return f"Order Item {self.id} - {self.product.name} - {self.quantity} - {self.sub_total_price} - {self.order.customer.full_name}"
+
+
     def save(self, **kwargs):
         self.sub_total_price = self.product.price * self.quantity
         super().save(**kwargs)

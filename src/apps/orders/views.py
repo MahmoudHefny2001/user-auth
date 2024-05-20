@@ -21,9 +21,7 @@ from django.db import transaction
 
 import threading
 
-from django.db.models import F, Sum, Case, When, IntegerField, Value, BooleanField
-
-from django.db import models
+from django.db.models import F, Case, When, Value, BooleanField
 
 
 
@@ -213,12 +211,10 @@ class OrderViewSetForMerchants(viewsets.ModelViewSet):
     throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
 
     def get_queryset(self):
-        if not self.request.user.merchant:
-            return Response({"error": "You are not allowed to perform this action"}, status=status.HTTP_403_FORBIDDEN)
-        
         self.queryset = Order.objects.filter(order_items__product__merchant=self.request.user.merchant).distinct()
         return self.queryset
     
+
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
 

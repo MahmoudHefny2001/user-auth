@@ -4,7 +4,7 @@ from .models import Wishlist, WishlistItem
 
 
 class WishlistAdmin(admin.ModelAdmin):
-    list_display = ['customer',]
+    list_display = ['customer', 'created']
     search_fields = ['customer__full_name', 'customer__email', 'customer__phone_number', 'customer__address', ]
     list_filter = ['customer__full_name', 'customer__email', 'customer__phone_number', 'customer__address',]
     list_display_links = ['customer',]
@@ -13,7 +13,7 @@ class WishlistAdmin(admin.ModelAdmin):
 
 
 class WishlistItemAdmin(admin.ModelAdmin):
-    list_display = ['wishlist', 'product',]
+    list_display = ['wishlist', 'product', 'created']
     search_fields = ['wishlist__customer__full_name', 'wishlist__customer__email', 'wishlist__customer__phone_number', 'wishlist__customer__address', 'product__name', 'product__price', 'product__image',]
     list_filter = ['wishlist__customer__full_name', 'wishlist__customer__email', 'wishlist__customer__phone_number', 'wishlist__customer__address', 'product__name', 'product__price', 'product__image',]
     list_display_links = ['wishlist', 'product',]

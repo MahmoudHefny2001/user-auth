@@ -70,7 +70,7 @@ class ClearCartViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated,]
     authentication_classes = [CustomJWTAuthenticationClass, JWTAuthentication,]
     throttle_classes = [AnonRateThrottle, UserRateThrottle,]
-
+    
     http_method_names = ['post',]
 
     def create(self, request):

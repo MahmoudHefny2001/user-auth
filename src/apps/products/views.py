@@ -125,7 +125,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     filterset_class = ProductFilter
     filter_backends = [SearchFilter, DjangoFilterBackend]
-    search_fields = ['id', 'name', 'category']
+    search_fields = ['id', 'name', 'category', 'tag']
 
     
     def get_serializer_class(self):
@@ -173,7 +173,7 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
         try:
             return Product.objects.filter(merchant=self.request.user).order_by('-created')
         except Exception as e:
-            return Response({"error": str(e)}, status=400)
+            raise e
     
     
     def get_serializer_class(self):
@@ -199,6 +199,7 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
             quantity = int(request.data.get('quantity'))
             on_sale = request.data.get('on_sale', None)
             sale_percent = request.data.get('sale_percent', None)
+            tag = request.data.get('tag', None)
             
             if on_sale == 'true':
                 on_sale = True
@@ -223,6 +224,7 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
                     on_sale=on_sale,
                     sale_percent=sale_percent,
                     image=request.data.get('image',),
+                    tag=tag,
                 )
 
             except Exception as e:
@@ -283,6 +285,7 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
             on_sale = request.data.get('on_sale', None)
             sale_percent = request.data.get('sale_percent', None)
             image = request.data.get('image', None)
+            tag = request.data.get('tag', None)
 
             colors = request.data.get('colors', None)
 
@@ -299,6 +302,10 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
         
             if bar_code:
                 product.bar_code = bar_code
+            
+            if tag:
+                product.tag = tag
+
             
             # if colors:
                 # from .models import ProductColor

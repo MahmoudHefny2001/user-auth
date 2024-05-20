@@ -1,7 +1,6 @@
 from .models import ProductReview
-from apps.products.models import Product
 
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 
 from django.dispatch import receiver
 

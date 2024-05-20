@@ -49,6 +49,8 @@ class Product(TimeStampedModel):
     
     merchant = models.ForeignKey(Merchant, on_delete=models.SET_NULL, related_name="products", null=True, blank=True)
 
+    tag = models.CharField(max_length=255, null=True, blank=True)
+
 
     def get_reviews(self):
         from apps.reviews.models import ProductReview
@@ -84,7 +86,7 @@ class Product(TimeStampedModel):
             self.price_after_sale = self.price - (self.price * Decimal(self.sale_percent) / 100)
 
         if not self.bar_code:
-            self.bar_code = uuid.uuid4().hex[:10].upper()
+            self.bar_code = uuid.uuid4().hex[:15].upper()
 
         super(Product, self).save(**kwargs)
 
