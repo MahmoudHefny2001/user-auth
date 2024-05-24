@@ -8,9 +8,9 @@ from datetime import timedelta
 
 from dotenv import load_dotenv
 
-load_dotenv("environments/.env.production")
+# load_dotenv("environments/.env.production")
 
-# load_dotenv("environments/.env.local")
+load_dotenv("environments/.env.local")
 
 
 
@@ -230,8 +230,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 # Loacl media files
-# MEDIA_URL = "media/"
-# MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+MEDIA_URL = "media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
