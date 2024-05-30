@@ -26,45 +26,49 @@ def send_merchant_order_email(order):
 
     subject = 'New Order'
 
-    if len(merchants) == 1 or len(merchants) == 0:
-        merchant = merchants.pop()
-        merchant_email = merchant.email
-        
-        total_price = order.total_price
-        
-        html_content = f"""
-        <html>
-            <body>
-                <h1>New Order</h1>
-                Dear Merchant,<br>
-                You have a new order with the following details: <br>
-                Order ID: <strong>{order.id}</strong><br>
-                Total Price: <strong>{total_price}</strong>
-                Shipping Address: <strong>{order.shipping_address}</strong>
-                Thank you for using our platform!
-                <p>
-                Best, <strong> Mahmoud Hefny </strong> <br>
-                </p>
-                
-            </body>
-        </html>
-        """
+    try:
 
-        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            to=[{"email":f"{merchant_email}","name":f"{merchant}"}],
-            html_content=html_content,
-            sender={"name":"Hefny","email": settings.DEFAULT_FROM_EMAIL},
-            subject=subject
-        )
+        if len(merchants) == 1:
+            merchant = merchants.pop()
+            merchant_email = merchant.email
+            
+            total_price = order.total_price
+            
+            html_content = f"""
+            <html>
+                <body>
+                    <h1>New Order</h1>
+                    Dear Merchant,<br>
+                    You have a new order with the following details: <br>
+                    Order ID: <strong>{order.id}</strong><br>
+                    Total Price: <strong>{total_price}</strong>
+                    Shipping Address: <strong>{order.shipping_address}</strong>
+                    Thank you for using our platform!
+                    <p>
+                    Best, <strong> Mahmoud Hefny </strong> <br>
+                    </p>
+                    
+                </body>
+            </html>
+            """
 
-        try:
-            api_response = api_instance.send_transac_email(send_smtp_email)
-            print(api_response)
-        except ApiException as e:
-            print("Exception when calling SMTPApi->send_transac_email: %s\n" % e)
+            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+                to=[{"email":f"{merchant_email}","name":f"{merchant}"}],
+                html_content=html_content,
+                sender={"name":"Hefny","email": settings.DEFAULT_FROM_EMAIL},
+                subject=subject
+            )
 
-        return 
-    
+            try:
+                api_response = api_instance.send_transac_email(send_smtp_email)
+                print(api_response)
+            except ApiException as e:
+                print("Exception when calling SMTPApi->send_transac_email: %s\n" % e)
+
+            return 
+    except Exception as e:
+        print(e)
+        return
 
     # send email to each merchant
     for merchant in merchants:

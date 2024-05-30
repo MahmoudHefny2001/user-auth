@@ -23,6 +23,7 @@ import threading
 
 from django.db.models import F, Case, When, Value, BooleanField
 
+from django.db import DatabaseError
 
 
 class OrderViewSetForCustomers(viewsets.ModelViewSet):
@@ -121,9 +122,12 @@ class OrderViewSetForCustomers(viewsets.ModelViewSet):
 
                 return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
+
         except Cart.DoesNotExist:
             return Response({"error": "Your cart does not exist."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except DatabaseError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 

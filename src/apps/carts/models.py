@@ -19,7 +19,7 @@ class Cart(TimeStampedModel):
         
 
     def __str__(self):
-        return f"Cart {self.id}"
+        return f"Cart {self.id} for {self.customer.full_name}"
 
 
 

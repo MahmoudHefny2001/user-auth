@@ -140,6 +140,31 @@ class ProductViewSet(viewsets.ModelViewSet):
             return RetrieveProductsSerializer
     
 
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        # Exclude merchant's email and phone from each item in the response
+        for item in response.data['results']:
+            if 'merchant' in item:
+                item['merchant'].pop('phone', None)
+                item['merchant'].pop('email', None)
+                item['merchant'].pop('address', None)
+        return response
+
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+        # Exclude merchant's email and phone from the retrieved item
+        if 'merchant' in response.data:
+            response.data['merchant'].pop('phone', None)
+            response.data['merchant'].pop('email', None)
+            response.data['merchant'].pop('address', None)
+            response.data.pop('bar_code', None)
+        
+        return response
+
+    # exclude some fields on the serializers like deleting merchant's[email, phone] from the response
+    
+        
+
 
 class ProductViewSetForMerchants(viewsets.ModelViewSet):
     
@@ -164,7 +189,7 @@ class ProductViewSetForMerchants(viewsets.ModelViewSet):
     
     filter_backends = [SearchFilter, DjangoFilterBackend]
     
-    search_fields = ['id', 'name', 'category']
+    search_fields = ['id', 'name', 'category', 'tag']
     
     def get_queryset(self):
         """

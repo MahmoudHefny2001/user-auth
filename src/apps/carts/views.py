@@ -36,6 +36,7 @@ class CartViewSet(viewsets.ModelViewSet):
             product = Product.objects.get(id=request.data.get("product_id"))
         except Product.DoesNotExist:
             return Response({"error": "Product not found"}, status=404)
+        
         cart = Cart.objects.filter(customer=request.user.customer).first()
 
         quantity = request.data.get("quantity", 1)

@@ -25,5 +25,5 @@ class ProductFilter(django_filters.FilterSet):
             'name' : ['icontains','exact'],
             'description' : ['icontains', 'exact'],
             'price' : ['gte', 'lte'],
-            # 'tag' : ['icontains', 'exact'],
+            'tag' : ['icontains', 'exact'],
             }

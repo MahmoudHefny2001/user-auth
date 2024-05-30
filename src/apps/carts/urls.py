@@ -6,7 +6,7 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 
-router.register(r"^my-cart", views.CartViewSet, basename="cart")
+router.register(r"^my-cart", views.CartViewSet, basename="customer-cart")
 
 router.register(r"^clear-cart", views.ClearCartViewSet, basename="clear-cart")
 
