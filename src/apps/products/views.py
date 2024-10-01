@@ -142,8 +142,12 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
+        
+        # get the products of the response
+        products = response.data
+        
         # Exclude merchant's email and phone from each item in the response
-        for item in response.data['results']:
+        for item in products:
             if 'merchant' in item:
                 item['merchant'].pop('phone', None)
                 item['merchant'].pop('email', None)

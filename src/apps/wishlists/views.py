@@ -5,7 +5,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from .models import Wishlist, WishlistItem
 
-from .serializers import WishListSerializer, WishListItemSerializer
+from .serializers import WishListItemSerializer
 
 from apps.products.models import Product
 
