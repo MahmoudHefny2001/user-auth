@@ -174,3 +174,7 @@ CORS_ALLOW_HEADERS = [
     'dnt',
     'origin',
 ]
+
+LOGGING = {
+    
+}
