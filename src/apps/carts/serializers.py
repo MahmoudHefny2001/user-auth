@@ -41,8 +41,9 @@ class CartItemSerializer(serializers.ModelSerializer):
             }
         
         if instance.product.image:
-            representation['product']['image'] = instance.product.image.url
-            # representation['product']['image'] = str(HOST_URL) + instance.product.image.url
+            # represent the full url of the image
+            # representation['product']['image'] = instance.product.image.url
+            representation['product']['image'] = str(HOST_URL) + instance.product.image.url
         
         return representation
 

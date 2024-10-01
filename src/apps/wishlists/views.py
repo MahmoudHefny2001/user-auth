@@ -22,7 +22,6 @@ class WishListViewSet(viewsets.ModelViewSet):
 
     throttle_classes = [AnonRateThrottle, UserRateThrottle, ]
 
-
     http_method_names   = ['get','delete', 'post',]
     
     def get_queryset(self):

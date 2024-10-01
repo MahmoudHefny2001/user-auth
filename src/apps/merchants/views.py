@@ -41,31 +41,31 @@ class MerchantSignupView(APIView):
     """
     This endpoint allows a MERCHANT to signup.
     """
+    
     permission_classes = [permissions.AllowAny]
     throttle_classes = [UserRateThrottle, AnonRateThrottle]
 
     def post(self, request, *args, **kwargs):
-        request.data["full_name"] = request.data["business_name"]
+        
+        data = request.data.copy()
+
+        data["full_name"] = data["business_name"]
+
         try:
-            serializer = serializers.MerchantSerializer(
-                data=request.data
-            )
+            serializer = serializers.MerchantSerializer(data=data)
             if serializer.is_valid():
                 merchant = serializer.save()
                 if merchant:
                     return Response({
                         'merchant': serializers.MerchantSerializer(merchant).data
-                    },
-                    status=status.HTTP_201_CREATED
-                    )
+                    }, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             return Response({
                 "error": str(e)
-            },
-            status=status.HTTP_400_BAD_REQUEST
-            )
+            }, status=status.HTTP_400_BAD_REQUEST)
+
         
 
     
@@ -87,8 +87,6 @@ class MerchantLoginView(APIView):
                 return Response({'error': 'Please provide both email/phone and password'}, status=status.HTTP_400_BAD_REQUEST)    
 
             user = CustomUserAuthenticationBackend().authenticate(request, username=email_or_phone, password=password)
-
-            merchant_profile = None
             
             if user is None:
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
@@ -273,7 +271,7 @@ class MerchantPasswordResetMailView(APIView):
     # authentication_classes = [JWTAuthentication,]
 
     def post(self, request, *args, **kwargs):
-        email = request.data.get('email')   
+        email = request.data.get('email')  
         if not email:
             return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
         

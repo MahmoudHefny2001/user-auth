@@ -30,8 +30,10 @@ class WishListItemSerializer(serializers.ModelSerializer):
         }
 
         try:
+            from server.settings.base_settings import HOST_URL
             request = self.context.get('request')
-            representation['product']['image'] = instance.product.image.url
+            # representation['product']['image'] = instance.product.image.url
+            representation['product']['image'] = str(HOST_URL) + instance.product.image.url
         except Exception as e:
             representation['product']['image'] = None
             
